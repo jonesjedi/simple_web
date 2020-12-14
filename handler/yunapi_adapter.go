@@ -12,6 +12,5 @@ func HandleYunApiRequest(c *gin.Context) {
 
 	//打印请求
 	log.Info("receive request", zap.Any("req", c.Request.Body))
-
 	c.String(http.StatusOK, "test")
 }

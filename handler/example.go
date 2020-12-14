@@ -4,6 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandleGrantImplicit(c *gin.Context) {
+func HandleHello(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "Hello World"})
 }

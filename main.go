@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"onbio/conf"
-	"onbio/handler"
 	"onbio/log"
+	"onbio/routers"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -29,14 +30,20 @@ func main() {
 	log.Init()
 	log.Info("test")
 
-	router := gin.Default()
+	router := gin.New()
 
-	gin.SetMode(gin.ReleaseMode)
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"code": http.StatusNotFound,
+			"msg":  "Api route not found",
+		})
+	})
 
-	router.POST("/request", handler.HandleYunApiRequest)
+	routers.InitApiRoute(router)
 
-	router.GET("/request", handler.HandleYunApiRequest)
+	gin.SetMode(gin.ReleaseMode) //always release
 
+	log.Error("test")
 	log.Info("svr listen on 8000")
 	router.Run(":8000")
 
