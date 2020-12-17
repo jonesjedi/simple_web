@@ -1,0 +1,97 @@
+package model
+
+import (
+	"onbio/logger"
+	"onbio/mysql"
+	"onbio/utils"
+	"time"
+
+	"github.com/jinzhu/gorm"
+	"go.uber.org/zap"
+)
+
+const (
+	LogTableName = "t_user"
+)
+
+/***
+
+CREATE TABLE `t_user` (
+  `id`  bigint(20)  NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `user_name` varchar(255) NOT NULL DEFAULT '' COMMENT '用户名',
+  `user_pwd` varchar(255) NOT NULL DEFAULT '' COMMENT '用户密码',
+  `user_avatar` varchar(255) NOT NULL DEFAULT '' COMMENT '用户头像',
+  `user_type` varchar(255) NOT NULL DEFAULT '' COMMENT '用户类型',
+  `user_src` int(11) NOT NULL DEFAULT '1' COMMENT '用户来源 1 自己注册 2 第三方登录',
+  `user_extra` varchar(1024) NOT NULL DEFAULT '' COMMENT '保留字段',
+  `user_link` varchar(25) NOT NULL DEFAULT '' COMMENT '用户个性链接',
+  `is_confirmed` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否通过邮箱认证',
+  `email` varchar(25) NOT NULL DEFAULT '' COMMENT '用户邮箱',
+  `operator` varchar(255) NOT NULL DEFAULT '' COMMENT '操作人',
+  `use_flag` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否有效',
+  `create_time` bigint(20) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `last_updated_time` bigint(20) NOT NULL DEFAULT '0' COMMENT '最后更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8 COMMENT '用户表';
+
+
+**/
+type User struct {
+	ID              uint64 `gorm:"primaryKey"  json:"id"`
+	UserName        string `gorm:"column:user_name" json:"user_name"`
+	UserPwd         string `gorm:"column:user_pwd" json:"user_pwd"`
+	UserAvatar      string `gorm:"column:user_avatar" json:"user_avatar"`
+	UserType        string `gorm:"column:user_type" json:"user_type"`
+	UserSrc         int    `gorm:"column:user_src" json:"user_src"`
+	UserExtra       string `gorm:"column:user_extra" json:"user_extra"`
+	UserLink        string `gorm:"column:user_link" json:"user_link"`
+	IsConfirmed     int    `gorm:"column:is_confirmed" json:"is_confirmed"`
+	Email           string `gorm:"column:email" json:"email"`
+	Operator        string `gorm:"column:operator" json:"operator"`
+	UseFlag         int    `gorm:"column:use_flag" json:"use_flag"`
+	CreateTime      uint64 `gorm:"column:create_time" json:"create_time"`
+	LastUpdatedTime uint64 `gorm:"column:last_updated_time" json:"last_updated_time"`
+}
+
+func CreateUser(userName, userAvatar, userPwd, email string) error {
+
+	//md5sum
+	userPwd, _ = utils.Md5Sum(userPwd)
+
+	newUser := User{
+		UserName:        userName,
+		UserPwd:         userPwd,
+		Email:           email,
+		UserAvatar:      userAvatar,
+		CreateTime:      uint64(time.Now().Unix()),
+		LastUpdatedTime: uint64(time.Now().Unix()),
+	}
+
+	db := getMysqlConn().Table(LogTableName)
+	db = db.Create(&newUser)
+	if db.Error != nil {
+		logger.Error("CreateUser::Find error: %s", zap.Error(db.Error))
+		return db.Error
+	}
+	return nil
+}
+func IsUserExisted(userName string) (err error, isExisted bool) {
+
+	db := getMysqlConn().Table(LogTableName)
+	if len(userName) != 0 {
+		db = db.Where("user_name = ?", userName)
+	}
+	var count int
+	err = db.Count(&count).Error
+	if err != nil {
+		logger.Error("get team log from db failed ")
+		return db.Error, true
+	}
+	if count > 0 {
+		return nil, true
+	}
+	return nil, false
+}
+func getMysqlConn() *gorm.DB {
+	return mysql.GetDBConn("teamDB")
+}

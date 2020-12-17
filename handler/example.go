@@ -1,9 +1,17 @@
 package handler
 
 import (
+	"net/http"
+	logger "onbio/logger"
+
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
-func HandleHello(c *gin.Context) {
-	c.JSON(200, gin.H{"status": "Hello World"})
+//测试请求
+func HandleTestRequest(c *gin.Context) {
+
+	//打印请求
+	logger.Info("receive request", zap.Any("req", c.Request.Body))
+	c.String(http.StatusOK, "test")
 }

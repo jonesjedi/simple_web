@@ -1,0 +1,9 @@
+init mysql: root:123456@tcp(127.0.0.1:3306)/onbio?charset=utf8&loc=Local
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /api/index/login          --> onbio/handler.HandleTestRequest (1 handlers)
+[GIN-debug] GET    /api/index/logout         --> onbio/handler.HandleTestRequest (1 handlers)
+[GIN-debug] POST   /api/register             --> onbio/handler.HandleRegisteRequest (1 handlers)
+[GIN-debug] POST   /api/hello                --> onbio/handler.HandleTestRequest (1 handlers)

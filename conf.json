@@ -2,14 +2,14 @@
   "mysql_conf": {
     "mysql_host": "127.0.0.1",
     "mysql_port": 3306,
-    "mysql_user_name": "kriswu",
-    "mysql_pwd": "1234",
+    "mysql_user_name": "root",
+    "mysql_pwd": "123456",
     "mysql_encoding": "utf8",
-    "mysql_db_name": "test"
+    "mysql_db_name": "onbio"
   },
 
   "log_conf": {
     "file_path": "/data/logs/",
-    "file_name": "test.log"
+    "file_name": "onbio.log"
   }
 }

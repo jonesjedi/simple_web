@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"onbio/conf"
-	"onbio/log"
+	"onbio/logger"
+	"onbio/middlewares"
+	"onbio/mysql"
 	"onbio/routers"
 	"os"
 
@@ -25,13 +27,15 @@ func main() {
 		fmt.Println("load conf failed")
 		return
 	}
-
+	logger.Init()
 	//初始化日志
-	log.Init()
-	log.Info("test")
+	logger.Info("test")
+
+	//初始化db
+	mysql.Init("onbio")
 
 	router := gin.New()
-
+	router.Use(middlewares.ResponseHandler())
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"code": http.StatusNotFound,
@@ -43,8 +47,7 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode) //always release
 
-	log.Error("test")
-	log.Info("svr listen on 8000")
+	logger.Info("svr listen on 8000")
 	router.Run(":8000")
 
 }
