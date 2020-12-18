@@ -114,7 +114,8 @@ func CheckUserPwd(userName, userPwd string) (err error, user User) {
 		err = errors.New("invalid user")
 	}
 
-	if user.UserPwd == userPwd {
+	if user.UserPwd != userPwd {
+		err = errors.New("pwd incorrect")
 		return
 	}
 	return
