@@ -24,9 +24,16 @@ type LogConf struct {
 	FileName string `json:"file_name"`
 }
 
+type RedisConf struct {
+	RedisHost string `json:"redis_host"`
+	RedisPort int    `json:"redis_port"`
+	RedisPwd  string `json:"redis_pwd"`
+}
+
 type Conf struct {
 	LogConfDetail   LogConf   `json:"log_conf"`
 	MysqlConfDetail MysqlConf `json:"mysql_conf"`
+	RedisConfDetail RedisConf `json:"redis_conf"`
 }
 
 func NewConf() *Conf {
@@ -60,4 +67,8 @@ func GetLogConfig() (conf LogConf) {
 
 func GetMysqlConfig() (conf MysqlConf) {
 	return config.MysqlConfDetail
+}
+
+func GetRedisConfig() (conf RedisConf) {
+	return config.RedisConfDetail
 }

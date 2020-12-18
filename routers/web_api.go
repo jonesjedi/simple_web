@@ -9,7 +9,7 @@ import (
 // InitApiRoute collect task routers
 func InitApiRoute(router *gin.Engine) *gin.Engine {
 	appRouter := router.Group("/api")
-	appRouter.GET("index/login", handler.HandleTestRequest)
+	appRouter.POST("login", handler.HandleLoginRequest)
 	appRouter.GET("index/logout", handler.HandleTestRequest)
 	appRouter.POST("register", handler.HandleRegisteRequest)
 	// 后台服务路由

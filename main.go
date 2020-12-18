@@ -7,6 +7,7 @@ import (
 	"onbio/logger"
 	"onbio/middlewares"
 	"onbio/mysql"
+	"onbio/redis"
 	"onbio/routers"
 	"os"
 
@@ -33,6 +34,7 @@ func main() {
 
 	//初始化db
 	mysql.Init("onbio")
+	redis.Init("onbio")
 
 	router := gin.New()
 	router.Use(middlewares.ResponseHandler())

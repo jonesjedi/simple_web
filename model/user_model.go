@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"onbio/logger"
 	"onbio/mysql"
 	"onbio/utils"
@@ -92,6 +93,33 @@ func IsUserExisted(userName string) (err error, isExisted bool) {
 	}
 	return nil, false
 }
+
+func CheckUserPwd(userName, userPwd string) (err error, user User) {
+
+	//md5sum
+	userPwd, _ = utils.Md5Sum(userPwd)
+	db := getMysqlConn().Table(LogTableName)
+	if len(userName) != 0 {
+		db = db.Where("user_name = ?", userName)
+	}
+
+	err = db.Scan(&user).Error
+	if err != nil {
+		logger.Error("get team log from db failed ")
+		return
+	}
+
+	if user.UserName == "" {
+		logger.Error("invalid user ")
+		err = errors.New("invalid user")
+	}
+
+	if user.UserPwd == userPwd {
+		return
+	}
+	return
+}
+
 func getMysqlConn() *gorm.DB {
 	return mysql.GetDBConn("teamDB")
 }

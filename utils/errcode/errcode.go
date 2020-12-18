@@ -34,4 +34,7 @@ var (
 	ErrTimeout         = StandardError{11005, "timeout"}
 	ErrDbQuery         = StandardError{11006, "数据库操作错误，请重试"}
 	ErrDbConnect       = StandardError{11007, "数据库连接错误，请重试"}
+	ErrUserPwd         = StandardError{11008, "用户名或密码错误"}
+	ErrInternal        = StandardError{11009, "内部错误"}
+	ErrRedisOper       = StandardError{11007, "Redis操作失败，请重试"}
 )
