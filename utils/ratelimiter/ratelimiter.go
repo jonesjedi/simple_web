@@ -6,6 +6,7 @@ import (
 
 	redigo "github.com/gomodule/redigo/redis"
 	"go.uber.org/zap"
+	"errors"
 )
 
 // NewRateLimiter 新建一个redis的限流
@@ -28,10 +29,15 @@ func IsRateLimiterExisted(key string) (err error) {
 	defer conn.Close()
 
 	cacheKey := "rate_limiter_" + key
-	_, err = conn.Do("get", cacheKey)
+	ret, err := conn.Do("get", cacheKey)
+	//logger.Info("get nil ret",zap.Any("ret",test),zap.Error(err))
 	if err != nil {
 		logger.Warn("rate limiter get failed", zap.String("key", key), zap.Error(err))
 		return
+	}
+	if ret == nil {
+		err = errors.New("not existed")
+		return 
 	}
 	return
 }
@@ -42,24 +48,10 @@ func RateLimitAllow(key string) bool {
 	defer conn.Close()
 
 	cacheKey := "rate_limiter_" + key
-
-	luaScript := `
-		local key =  KEYS[1];
-		local num = redis.call("decr", key);
-		if(num > 0) then
-			return num;
-		end
-
-		local ttl = redis.call("ttl", key);
-		if(ttl == -1) then
-			redis.call("del", key);
-		end
-		return 0;
-	`
-
-	script := redigo.NewScript(1, luaScript)
-	reply, err := redigo.Int(script.Do(conn, cacheKey))
+	reply, err := redigo.Int(conn.Do("decr", cacheKey))
+	logger.Info("decr ",zap.Int("reply",reply),zap.Error(err))
 	if err != nil {
+		logger.Error("err do decr",zap.Error(err))
 		return false
 	}
 

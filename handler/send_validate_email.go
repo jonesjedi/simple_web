@@ -53,7 +53,7 @@ func HandleSendValidateEmailRequest(c *gin.Context) {
 		return
 	}
 	//检查次数是否超过限制
-	key := fmt.Sprint(USER_SEND_VALID_EMAIL_LIMIT, user.UserName)
+	key := fmt.Sprintf(USER_SEND_VALID_EMAIL_LIMIT, user.UserName)
 
 	err = ratelimiter.IsRateLimiterExisted(key)
 
@@ -86,7 +86,7 @@ func HandleSendValidateEmailRequest(c *gin.Context) {
 		return
 	}
 
-	sendUrl := fmt.Sprint(USER_EMAIL_VALID_URL, code)
+	sendUrl := fmt.Sprintf(USER_EMAIL_VALID_URL, code)
 
 	//没有接口，先打个log
 	logger.Info("valid url ", zap.String("url", sendUrl))
