@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	LogTableName = "t_user"
+	UserTableName = "t_user"
 )
 
 /***
@@ -68,7 +68,7 @@ func CreateUser(userName, userAvatar, userPwd, email string) error {
 		LastUpdatedTime: uint64(time.Now().Unix()),
 	}
 
-	db := getMysqlConn().Table(LogTableName)
+	db := getMysqlConn().Table(UserTableName)
 	db = db.Create(&newUser)
 	if db.Error != nil {
 		logger.Error("CreateUser::Find error: %s", zap.Error(db.Error))
@@ -78,7 +78,7 @@ func CreateUser(userName, userAvatar, userPwd, email string) error {
 }
 func IsUserExisted(userName string) (err error, isExisted bool) {
 
-	db := getMysqlConn().Table(LogTableName)
+	db := getMysqlConn().Table(UserTableName)
 	if len(userName) != 0 {
 		db = db.Where("user_name = ?", userName)
 	}
@@ -94,18 +94,68 @@ func IsUserExisted(userName string) (err error, isExisted bool) {
 	return nil, false
 }
 
+func UpdateUserInfoByID( userID uint64,info User) (err error) {
+	user := User{
+		ID: userID,
+	}
+
+	updates := map[string]interface{}{}
+
+	if info.IsConfirmed != 0 {
+		updates["is_confirmed"] = info.IsConfirmed
+	}
+	if info.IsConfirmed != 0 {
+		updates["email"] = info.Email
+	}
+
+	updates["last_updated_time"] = uint64(time.Now().Unix())
+
+	db := getMysqlConn().Table(UserTableName)
+	err = db.Model(&user).Updates(updates).Error
+	if err != nil {
+		logger.Error("update user info ", zap.Any("model", user), zap.Any("updates", updates))
+		return
+	}
+	return 
+}
+
+func GetUserInfo(userEmail, userName string) (err error, user User) {
+	db := getMysqlConn().Table(UserTableName)
+	if len(userName) != 0 {
+		db = db.Where("user_name = ?", userName)
+	}
+
+	if len(userEmail) != 0 {
+		db = db.Where("email = ?", userEmail)
+	}
+
+	err = db.Scan(&user).Error
+	if err != nil {
+		logger.Error("get user info from db failed ")
+		return
+	}
+
+	if user.UserName == "" {
+		logger.Error("invalid user ")
+		err = errors.New("invalid user")
+	}
+
+	return
+
+}
+
 func CheckUserPwd(userName, userPwd string) (err error, user User) {
 
 	//md5sum
 	userPwd, _ = utils.Md5Sum(userPwd)
-	db := getMysqlConn().Table(LogTableName)
+	db := getMysqlConn().Table(UserTableName)
 	if len(userName) != 0 {
 		db = db.Where("user_name = ?", userName)
 	}
 
 	err = db.Scan(&user).Error
 	if err != nil {
-		logger.Error("get team log from db failed ")
+		logger.Error("get user info from db failed ")
 		return
 	}
 

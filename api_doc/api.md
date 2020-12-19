@@ -49,12 +49,11 @@ POST
 #### 接口地址:
 /api/user/validate_email
 #### 请求方式：
-POST
+GET
 #### 请求参数：
 |  参数名   | 类型  | 是否必须   | 说明 |
 |  ----  | ----  | ----  | ----  |
 |  code  | string  | 是  | 验证code  |
-|  user_id  | string  | 是  | 用户名  |
 
 #### 返回
 ```json
