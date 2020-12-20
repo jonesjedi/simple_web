@@ -18,7 +18,7 @@ func InitApiRoute(router *gin.Engine) *gin.Engine {
 	appRouter.GET("/user/validate_email", handler.HandleValidateEmailRequest)
 
 	appRouter.POST("/user/send_reset_pwd", handler.HandleSendResetPwdEmailRequest)
-	appRouter.GET("/user/reset_pwd", handler.HandleResetPwdRequest)
+	appRouter.POST("/user/reset_pwd", handler.HandleResetPwdRequest)
 
 	// 后台服务路由
 	bkRouter := appRouter.Group("/").Use()
