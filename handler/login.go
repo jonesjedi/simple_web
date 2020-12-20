@@ -6,6 +6,7 @@ import (
 	"onbio/logger"
 	"onbio/model"
 	"onbio/redis"
+	"onbio/services"
 	"onbio/utils/errcode"
 	"time"
 
@@ -15,21 +16,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 )
-
-const (
-	USER_SESSION_REDIS_PRE = "onbio_session:%s"
-	USER_REDIRECT_URL      = "http://www.qq.com"
-)
-
-type SessionContent struct {
-	UserName    string `json:"user_name"`
-	UserAvatar  string `json:"user_avatar"`
-	UserID      uint64 `json:"user_id"`
-	UserLink    string `json:"user_link"`
-	IsConfirmed int    `json:"is_confirmed"`
-	Email       string `json:"email"`
-	LoginTime   uint64 `json:"login_time"`
-}
 
 //form 表单提交
 func HandleLoginRequest(c *gin.Context) {
@@ -61,7 +47,7 @@ func HandleLoginRequest(c *gin.Context) {
 	//先生成一个cookie
 	sessionKey := fmt.Sprintf("%s", uuid.NewV4())
 
-	var sessionContent SessionContent
+	var sessionContent services.SessionContent
 	sessionContent.Email = user.Email
 	sessionContent.IsConfirmed = user.IsConfirmed
 	sessionContent.UserAvatar = user.UserAvatar
@@ -78,7 +64,7 @@ func HandleLoginRequest(c *gin.Context) {
 	conn := redis.GetConn("onbio")
 	defer conn.Close()
 
-	key := fmt.Sprintf(USER_SESSION_REDIS_PRE, sessionKey)
+	key := fmt.Sprintf(services.USER_SESSION_REDIS_PRE, sessionKey)
 	_, err = conn.Do("SET", key, string(sessionStr))
 	if err != nil && err != redigo.ErrNil {
 		logger.Error("err set redis ", zap.String("key", key), zap.Error(err))
@@ -90,6 +76,6 @@ func HandleLoginRequest(c *gin.Context) {
 	c.SetCookie("onbio_user", sessionKey, 86400, "/", ".onb.io", false, true)
 
 	//跳转
-	c.Redirect(http.StatusFound, USER_REDIRECT_URL)
+	c.Redirect(http.StatusFound, services.USER_REDIRECT_URL)
 
 }

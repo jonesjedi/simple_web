@@ -94,7 +94,7 @@ func IsUserExisted(userName string) (err error, isExisted bool) {
 	return nil, false
 }
 
-func UpdateUserInfoByID( userID uint64,info User) (err error) {
+func UpdateUserInfoByID(userID uint64, info User) (err error) {
 	user := User{
 		ID: userID,
 	}
@@ -104,8 +104,16 @@ func UpdateUserInfoByID( userID uint64,info User) (err error) {
 	if info.IsConfirmed != 0 {
 		updates["is_confirmed"] = info.IsConfirmed
 	}
-	if info.IsConfirmed != 0 {
+	if info.Email != "" {
 		updates["email"] = info.Email
+	}
+
+	if info.UserPwd != "" {
+		updates["user_pwd"] = info.UserPwd
+	}
+
+	if info.UserAvatar != "" {
+		updates["user_avatar"] = info.UserAvatar
 	}
 
 	updates["last_updated_time"] = uint64(time.Now().Unix())
@@ -116,7 +124,7 @@ func UpdateUserInfoByID( userID uint64,info User) (err error) {
 		logger.Error("update user info ", zap.Any("model", user), zap.Any("updates", updates))
 		return
 	}
-	return 
+	return
 }
 
 func GetUserInfo(userEmail, userName string) (err error, user User) {

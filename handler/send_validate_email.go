@@ -127,7 +127,7 @@ func GenValidCode(userId uint64, userEmail string) (err error, emailValidCode st
 	defer conn.Close()
 
 	key := fmt.Sprintf(USER_VALID_CONTENT_PRE, emailValidCode)
-	_, err = conn.Do("SET", key, string(validContentStr))
+	_, err = conn.Do("SET", key, string(validContentStr), "EX", 6*3600, "NX")
 	if err != nil && err != redigo.ErrNil {
 		logger.Error("err set redis ", zap.String("key", key), zap.Error(err))
 		return
