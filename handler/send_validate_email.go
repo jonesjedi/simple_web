@@ -38,7 +38,7 @@ func HandleSendValidateEmailRequest(c *gin.Context) {
 	}
 
 	//判断是哪个用户的email 。限制次数，每天只能发几次这样子
-	err, user := model.GetUserInfo(params.UserEmail, "")
+	err, user := model.GetUserInfo(params.UserEmail, "", 0)
 
 	if err != nil {
 		logger.Info("get user info by email failed ", zap.String("user email", params.UserEmail))

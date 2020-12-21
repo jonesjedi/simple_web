@@ -35,7 +35,7 @@ func HandleSendResetPwdEmailRequest(c *gin.Context) {
 	}
 
 	//判断是哪个用户的email
-	err, user := model.GetUserInfo(params.UserEmail, "")
+	err, user := model.GetUserInfo(params.UserEmail, "",0)
 
 	if err != nil {
 		logger.Info("get user info by email failed ", zap.String("user email", params.UserEmail))

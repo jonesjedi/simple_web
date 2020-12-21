@@ -52,8 +52,9 @@ func OnbioLoginAuth() gin.HandlerFunc {
 			logger.Error("err Unmarshal valid info ", zap.ByteString("key", sessionContentStr), zap.Error(err))
 			return
 		}
+		userId := (int)(session.UserID)
 		c.Set("user_name", session.UserName)
-		c.Set("user_id", session.UserID)
+		c.Set("user_id", userId)
 		c.Next()
 	}
 }

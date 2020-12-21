@@ -127,7 +127,7 @@ func UpdateUserInfoByID(userID uint64, info User) (err error) {
 	return
 }
 
-func GetUserInfo(userEmail, userName string) (err error, user User) {
+func GetUserInfo(userEmail, userName string, userID uint64) (err error, user User) {
 	db := getMysqlConn().Table(UserTableName)
 	if len(userName) != 0 {
 		db = db.Where("user_name = ?", userName)
@@ -135,6 +135,10 @@ func GetUserInfo(userEmail, userName string) (err error, user User) {
 
 	if len(userEmail) != 0 {
 		db = db.Where("email = ?", userEmail)
+	}
+
+	if userID != 0 {
+		db = db.Where("id = ?", userID)
 	}
 
 	err = db.Scan(&user).Error

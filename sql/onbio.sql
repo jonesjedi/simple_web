@@ -24,7 +24,7 @@ CREATE TABLE `t_user_link` (
   `user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '用户id',
   `link_url` varchar(255) NOT NULL DEFAULT '' COMMENT '用户链接',
   `link_desc` varchar(2048) NOT NULL DEFAULT '' COMMENT '内容简述',
-  `user_img` varchar(255) NOT NULL DEFAULT '' COMMENT '链接首图',
+  `link_img` varchar(255) NOT NULL DEFAULT '' COMMENT '链接首图',
   `operator` varchar(255) NOT NULL DEFAULT '' COMMENT '操作人',
   `use_flag` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否有效',
   `create_time` bigint(20) NOT NULL DEFAULT '0' COMMENT '创建时间',
