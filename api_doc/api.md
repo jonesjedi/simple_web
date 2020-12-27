@@ -178,7 +178,8 @@ GET
 #### 请求参数：
 |  参数名   | 类型  | 是否必须   | 说明 |
 |  ----  | ----  | ----  | ----  |
-不需要参数，从登录态获取用户信息
+|  page  | int  | 是  | 页码  |
+|  page_size  | int  | 是  | 页大小  |
 
 #### 返回
 ```json
@@ -187,9 +188,16 @@ GET
     "msg":"succ",
     "data":[
         {
-            "link_url":"http://www.qq.com",
-            "link_desc":"etss",
-            "user_img":"首图链接"
+            "count":1,
+            "page":1,
+            "page_size":10,
+            "list":[
+                "link_id":111,
+                "link_url":"http://www.qq.com",
+                "link_desc":"etss",
+                "link_img":"首图链接"
+            ]
+
         }
     ]
 }

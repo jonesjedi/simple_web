@@ -50,7 +50,7 @@ func CreateLink(userID uint64, linkUrl, linkDesc, linkImg string) (err error) {
 		LastUpdatedTime: uint64(time.Now().Unix()),
 	}
 
-	db := getMysqlConn().Table(UserTableName)
+	db := getMysqlConn().Table(LinkTableName)
 	db = db.Create(&newLink)
 	if db.Error != nil {
 		logger.Error("CreateLink::Find error: %s", zap.Error(db.Error))
@@ -60,12 +60,59 @@ func CreateLink(userID uint64, linkUrl, linkDesc, linkImg string) (err error) {
 }
 
 //更新链接记录
-func UpdateLinkByID(linkID uint64, link Link) (err error) {
+func UpdateLinkByID(linkID, userID uint64, info Link) (err error) {
+	link := Link{
+		ID:     linkID,
+		UserID: userID,
+	}
+
+	updates := map[string]interface{}{}
+
+	if info.LinkUrl != "" {
+		updates["link_url"] = info.LinkUrl
+	}
+	if info.LinkImg != "" {
+		updates["link_img"] = info.LinkImg
+	}
+
+	if info.LinkDesc != "" {
+		updates["link_desc"] = info.LinkDesc
+	}
+
+	if info.UseFlag != -1 {
+		updates["use_flag"] = info.UseFlag
+	}
+
+	updates["last_updated_time"] = uint64(time.Now().Unix())
+
+	db := getMysqlConn().Table(LinkTableName)
+	err = db.Model(&link).Updates(updates).Error
+	if err != nil {
+		logger.Error("update link info ", zap.Any("model", link), zap.Any("updates", updates))
+		return
+	}
+	return
+
 	return
 }
 
-
 //获取用户链接列表
-func GetUserLinkList(userID uint64, page, pageSize int) (linkList []*Link, err error) {
-  return 
+func GetUserLinkList(userID uint64, page, pageSize int) (linkList []*Link, count int, err error) {
+
+	db := getMysqlConn().Table(LinkTableName)
+
+	if userID != 0 {
+		db = db.Where("user_id = ?", userID)
+	}
+	err = db.Count(&count).Error
+	if err != nil {
+		logger.Error("get user link count from db failed ")
+		return
+	}
+	err = db.Find(&linkList).Error
+	if err != nil {
+		logger.Error("get user link from db failed ")
+		return
+	}
+	return
 }

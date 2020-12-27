@@ -11,10 +11,10 @@ import (
 )
 
 type RegisterParam struct {
-	UserName   string `json:"user_name" binding:"required"`
-	UserPwd    string `json:"user_pwd" binding:"required"`
-	UserAvatar string `json:"user_avatar" binding:"required"`
-	Email      string `json:"email" binding:"required"`
+	UserName string `json:"user_name" binding:"required"`
+	UserPwd  string `json:"user_pwd" binding:"required"`
+	//UserAvatar string `json:"user_avatar" binding:"required"`
+	Email string `json:"email" binding:"required"`
 }
 
 func HandleRegisteRequest(c *gin.Context) {
@@ -29,7 +29,7 @@ func HandleRegisteRequest(c *gin.Context) {
 	userName := params.UserName
 	userPwd := params.UserPwd
 	email := params.Email
-	userAvatar := params.UserAvatar
+	userAvatar := ""
 	//1.check params
 	if userName == "" || userPwd == "" || email == "" {
 		c.Error(errcode.ErrParam)
@@ -47,7 +47,7 @@ func HandleRegisteRequest(c *gin.Context) {
 	}
 	if isExisted {
 		logger.Error("user existed ", zap.String("user", userName))
-		c.Error(errcode.ErrDbQuery)
+		c.Error(errcode.ErrUserExisted)
 		return
 	}
 	err = model.CreateUser(userName, userAvatar, userPwd, email)

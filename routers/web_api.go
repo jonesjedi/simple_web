@@ -31,6 +31,10 @@ func InitApiRoute(router *gin.Engine) *gin.Engine {
 	linkRouter := appRouter.Group("link/", middlewares.OnbioLoginAuth())
 	{
 		linkRouter.POST("/updateinfo", handler.HandleUpdateUserInfoRequest)
+		linkRouter.GET("/userlink", handler.HandleGetUserLinkRequest)
+		linkRouter.GET("/userinfo", handler.HandleGetUserInfoRequest)
+		linkRouter.POST("/updatelink", handler.HandleUpdateUserLinkRequest)
+		linkRouter.POST("/createlink", handler.HandleCreateUserLinkRequest)
 	}
 
 	return router
