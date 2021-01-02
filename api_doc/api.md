@@ -84,7 +84,7 @@ Form 表单提交
 ### 5.发送密码重置邮件
 
 #### 接口地址:
-/api/user/reset_pwd_email
+/api/user/send_reset_pwd
 #### 请求方式：
 POST
 #### 请求参数：

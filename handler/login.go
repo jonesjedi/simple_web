@@ -17,15 +17,27 @@ import (
 	"go.uber.org/zap"
 )
 
-//form 表单提交
+type LoginParam struct {
+	UserName string `json:"user_name" binding:"required"`
+	UserPwd  string `json:"user_pwd" binding:"required"`
+}
+
+//改成普通post请求
 func HandleLoginRequest(c *gin.Context) {
 
 	var (
 		jsons = jsoniter.ConfigCompatibleWithStandardLibrary
 	)
 
-	userName := c.PostForm("user_name")
-	userPwd := c.PostForm("user_pwd")
+	var params LoginParam
+	err := c.ShouldBind(&params)
+	if err != nil {
+		logger.Error("params err ")
+		c.Error(errcode.ErrParam)
+		return
+	}
+	userName := params.UserName
+	userPwd := params.UserPwd
 
 	if userName == "" || userPwd == "" {
 		c.Error(errcode.ErrParam)
@@ -76,6 +88,11 @@ func HandleLoginRequest(c *gin.Context) {
 	c.SetCookie("onbio_user", sessionKey, 86400, "/", ".onb.io", false, true)
 
 	//跳转
-	c.Redirect(http.StatusFound, services.USER_REDIRECT_URL)
-
+	//c.Redirect(http.StatusFound, services.USER_REDIRECT_URL)
+	//不跳转了
+	c.JSON(http.StatusOK, gin.H{
+		"code": 0,
+		"msg":  "success",
+		"data": gin.H{},
+	})
 }
