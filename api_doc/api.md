@@ -172,7 +172,7 @@ GET
 ### 9.个人链接列表
 
 #### 接口地址:
-/api/link/link_list
+/api/link/userlink
 #### 请求方式：
 GET
 #### 请求参数：
