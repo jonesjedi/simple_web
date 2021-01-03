@@ -151,7 +151,7 @@ GET
 ### 8.更新个人头像
 
 #### 接口地址:
-/api/user/update_info
+/api/link/updateinfo
 #### 请求方式：
 GET
 #### 请求参数：
