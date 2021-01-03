@@ -125,7 +125,7 @@ POST
 ### 7.个人主页
 
 #### 接口地址:
-/api/user/index
+/api/link/userinfo
 #### 请求方式：
 GET
 #### 请求参数：
