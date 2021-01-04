@@ -203,4 +203,50 @@ GET
 }
 ```
 
+### 10.创建个人链接
+
+#### 接口地址:
+/api/link/createlink
+#### 请求方式：
+POST
+#### 请求参数：
+|  参数名   | 类型  | 是否必须   | 说明 |
+|  ----  | ----  | ----  | ----  |
+|  link_url  | string  | 是  | url  |
+|  link_desc  | string  | 是  | desc  |
+|  link_img  | string  | 是  | img  |
+
+#### 返回
+```json
+{
+    "ret":0,    
+    "msg":"succ",
+    "data":{}
+}
+```
+
+### 10.创建个人链接
+
+#### 接口地址:
+/api/link/updatelink
+#### 请求方式：
+POST
+#### 请求参数：
+|  参数名   | 类型  | 是否必须   | 说明 |
+|  ----  | ----  | ----  | ----  |
+|  id  | int  | 是  | id  |
+|  link_url  | string  | 是  | url  |
+|  link_desc  | string  | 是  | desc  |
+|  link_img  | string  | 是  | img  |
+
+#### 返回
+```json
+{
+    "ret":0,    
+    "msg":"succ",
+    "data":{}
+}
+```
+
+
 

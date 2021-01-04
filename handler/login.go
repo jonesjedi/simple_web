@@ -85,7 +85,7 @@ func HandleLoginRequest(c *gin.Context) {
 	}
 
 	//设置cookie
-	c.SetCookie("onbio_user", sessionKey, 86400, "/", ".onb.io", false, true)
+	c.SetCookie("onbio_user", sessionKey, 86400, "/", ".drczh.cn", false, true)
 
 	//跳转
 	//c.Redirect(http.StatusFound, services.USER_REDIRECT_URL)
