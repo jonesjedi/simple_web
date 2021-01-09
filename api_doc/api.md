@@ -192,10 +192,13 @@ GET
             "page":1,
             "page_size":10,
             "list":[
-                "link_id":111,
-                "link_url":"http://www.qq.com",
-                "link_desc":"etss",
-                "link_img":"首图链接"
+                {
+                    "link_id":111,
+                    "link_url":"http://www.qq.com",
+                    "link_desc":"etss",
+                    "link_img":"首图链接",
+                    "is_valid":0
+                }
             ]
 
         }

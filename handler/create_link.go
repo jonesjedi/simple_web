@@ -11,9 +11,9 @@ import (
 )
 
 type CreateUserLinkParam struct {
-	LinkUrl  string `json:"link_url" binding:"required"`
-	LinkImg  string `json:"link_img" binding:"required"`
-	LinkDesc string `json:"link_desc" binding:"required"`
+	LinkUrl string `json:"link_url" binding:"required"`
+	//LinkImg  string `json:"link_img" binding:"required"`
+	//LinkDesc string `json:"link_desc" binding:"required"`
 }
 
 func HandleCreateUserLinkRequest(c *gin.Context) {
