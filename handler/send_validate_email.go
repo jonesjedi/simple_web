@@ -9,6 +9,8 @@ import (
 	"onbio/utils/errcode"
 	"onbio/utils/ratelimiter"
 
+	"onbio/utils/mailsender"
+
 	"github.com/gin-gonic/gin"
 	redigo "github.com/gomodule/redigo/redis"
 	jsoniter "github.com/json-iterator/go"
@@ -19,7 +21,7 @@ import (
 
 const (
 	USER_SEND_VALID_EMAIL_LIMIT = "user_send_valid_email_limit:%s"
-	USER_EMAIL_VALID_URL        = "http://onb.io/user/validate?code=%s"
+	USER_EMAIL_VALID_URL        = "http://onbio.kris.drczh.cn/api/user/validate_email?code=%s"
 	USER_VALID_CONTENT_PRE      = "user_valid:%s"
 )
 
@@ -90,6 +92,21 @@ func HandleSendValidateEmailRequest(c *gin.Context) {
 
 	//没有接口，先打个log
 	logger.Info("valid url ", zap.String("url", sendUrl))
+
+	var ms mailsender.MailSender = &mailsender.Mail{
+		Sender:    "sender@onb.io",  // 可以自定义
+		Recipient: params.UserEmail, // 如果处于Sandbox只能发送已验证过的邮箱
+		Subject:   "onbio validate email",
+		HTMLBody:  sendUrl,
+		TextBody:  sendUrl, // 不支持HTML的话会返回这个
+		CharSet:   "UTF-8", // 固定字符码
+	}
+	sendRet := ms.SendMail()
+	if !sendRet {
+		logger.Error("send mail failed ")
+		c.Error(errcode.ErrInternal)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,

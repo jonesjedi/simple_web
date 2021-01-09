@@ -213,8 +213,6 @@ POST
 |  参数名   | 类型  | 是否必须   | 说明 |
 |  ----  | ----  | ----  | ----  |
 |  link_url  | string  | 是  | url  |
-|  link_desc  | string  | 是  | desc  |
-|  link_img  | string  | 是  | img  |
 
 #### 返回
 ```json
@@ -238,6 +236,7 @@ POST
 |  link_url  | string  | 是  | url  |
 |  link_desc  | string  | 是  | desc  |
 |  link_img  | string  | 是  | img  |
+|  is_valid  | int  | 是  | 是否有效  |
 
 #### 返回
 ```json

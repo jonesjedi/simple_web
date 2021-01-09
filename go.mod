@@ -3,6 +3,7 @@ module onbio
 go 1.15
 
 require (
+	github.com/PuerkitoBio/goquery v1.6.0 // indirect
 	github.com/aws/aws-sdk-go v1.36.19
 	github.com/garyburd/redigo v1.6.2
 	github.com/gin-gonic/gin v1.6.3

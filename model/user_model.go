@@ -76,6 +76,25 @@ func CreateUser(userName, userAvatar, userPwd, email string) error {
 	}
 	return nil
 }
+
+func IsEmailExisted(email string) (err error, isExisted bool) {
+
+	db := getMysqlConn().Table(UserTableName)
+	if len(email) != 0 {
+		db = db.Where("email = ?", email)
+	}
+	var count int
+	err = db.Count(&count).Error
+	if err != nil {
+		logger.Error("get user from db failed ")
+		return db.Error, true
+	}
+	if count > 0 {
+		return nil, true
+	}
+	return nil, false
+}
+
 func IsUserExisted(userName string) (err error, isExisted bool) {
 
 	db := getMysqlConn().Table(UserTableName)
@@ -85,7 +104,7 @@ func IsUserExisted(userName string) (err error, isExisted bool) {
 	var count int
 	err = db.Count(&count).Error
 	if err != nil {
-		logger.Error("get team log from db failed ")
+		logger.Error("get user from db failed ")
 		return db.Error, true
 	}
 	if count > 0 {

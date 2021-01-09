@@ -1,14 +1,13 @@
 package mailsender
 
 import (
-	"fmt"
-
+	"onbio/logger"
 	// go get -u github.com/aws/aws-sdk-go
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
+	"go.uber.org/zap"
 )
 
 const (
@@ -17,9 +16,9 @@ const (
 	// 现使用Hard-Coded模式硬编码
 	// 开发使用dev用户生成的访问权限，线上可更换为生产环境权限
 	// 初始为空请获得到访问权限填充
-	AKID = ""
+	AKID = "AKIARSFZZZ2P5HEEJGWV"
 	// SECREY_KEY 全称 AWS_SECRET_ACCESS_KEY
-	SECREY_KEY = ""
+	SECREY_KEY = "J+NngUcIfpQxsl0JkbKFfpxrFbhPFy4/AHIDfNeE"
 )
 
 // MailSender 邮件发送者接口
@@ -88,7 +87,9 @@ func (m *Mail) SendMail() bool {
 
 	// 如果发生错误显示错误信息
 	if err != nil {
+		/**
 		if aerr, ok := err.(awserr.Error); ok {
+
 			switch aerr.Code() {
 			case ses.ErrCodeMessageRejected:
 				fmt.Println(ses.ErrCodeMessageRejected, aerr.Error())
@@ -101,10 +102,12 @@ func (m *Mail) SendMail() bool {
 			}
 		} else {
 			fmt.Println(err.Error())
-		}
+		}***/
+		logger.Error("send email error ", zap.Error(err))
 
 		return false
 	}
+	logger.Info("send email by aws ret", zap.Any("ret", result))
 	// 如果得到MessageId证明操作成功
 	if res := result.MessageId; *res != "" {
 		return true

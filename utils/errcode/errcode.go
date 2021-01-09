@@ -42,4 +42,5 @@ var (
 	ErrEmailValidLimit   = StandardError{11013, "邮箱验证次数超过限制"}
 	ErrCodeInValid       = StandardError{11014, "code 无效"}
 	ErrUserExisted       = StandardError{11015, "用户已经存在"}
+	ErrEmailExisted       = StandardError{11016, "邮箱已经被注册"}
 )

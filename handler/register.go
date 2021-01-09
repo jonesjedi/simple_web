@@ -50,6 +50,21 @@ func HandleRegisteRequest(c *gin.Context) {
 		c.Error(errcode.ErrUserExisted)
 		return
 	}
+
+	err, isExisted = model.IsEmailExisted(email)
+
+	if err != nil {
+		logger.Error("check if email existed failed ", zap.Error(err))
+		c.Error(errcode.ErrDbQuery)
+		return
+
+	}
+	if isExisted {
+		logger.Error("email existed ", zap.String("email", email))
+		c.Error(errcode.ErrEmailExisted)
+		return
+	}
+
 	err = model.CreateUser(userName, userAvatar, userPwd, email)
 
 	if err != nil {
