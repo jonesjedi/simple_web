@@ -178,8 +178,6 @@ GET
 #### 请求参数：
 |  参数名   | 类型  | 是否必须   | 说明 |
 |  ----  | ----  | ----  | ----  |
-|  page  | int  | 是  | 页码  |
-|  page_size  | int  | 是  | 页大小  |
 
 #### 返回
 ```json
@@ -197,7 +195,9 @@ GET
                     "link_url":"http://www.qq.com",
                     "link_desc":"etss",
                     "link_img":"首图链接",
-                    "is_valid":0
+                    "is_valid":0,
+                    "is_special":1,
+                    "position":12
                 }
             ]
 
@@ -216,7 +216,7 @@ POST
 |  参数名   | 类型  | 是否必须   | 说明 |
 |  ----  | ----  | ----  | ----  |
 |  link_url  | string  | 是  | url  |
-
+|  position  | int  | 是  | position  |
 #### 返回
 ```json
 {
@@ -240,6 +240,8 @@ POST
 |  link_desc  | string  | 是  | desc  |
 |  link_img  | string  | 是  | img  |
 |  is_valid  | int  | 是  | 是否有效  |
+|  is_special  | int  | 是  | 是否有特效  |
+|  position  | int  | 是  | 位置  |
 
 #### 返回
 ```json

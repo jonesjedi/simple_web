@@ -30,22 +30,28 @@ CREATE TABLE `t_user_link` (
 type Link struct {
 	ID              uint64 `gorm:"primaryKey"  json:"id"`
 	UserID          uint64 `gorm:"column:user_id" json:"user_id"`
+	LinkTitle       string `gorm:"column:link_title" json:"link_title"`
 	LinkUrl         string `gorm:"column:link_url" json:"link_url"`
 	LinkDesc        string `gorm:"column:link_desc" json:"link_desc"`
 	LinkImg         string `gorm:"column:link_img" json:"link_img"`
+	Position        uint64    `gorm:"column:position" json:"position"`
+	IsSpecial       int    `gorm:"column:is_special" json:"is_special"`
 	Operator        string `gorm:"column:operator" json:"operator"`
 	UseFlag         int    `gorm:"column:use_flag" json:"use_flag"`
 	CreateTime      uint64 `gorm:"column:create_time" json:"create_time"`
 	LastUpdatedTime uint64 `gorm:"column:last_updated_time" json:"last_updated_time"`
 }
 
-func CreateLink(userID uint64, linkUrl, linkDesc, linkImg string) (err error) {
+func CreateLink(userID ,position uint64, linkUrl, linkDesc, linkImg, linkTitle string) (err error) {
 
 	newLink := Link{
 		UserID:          userID,
 		LinkUrl:         linkUrl,
+		LinkTitle:       linkTitle,
 		LinkDesc:        linkDesc,
 		LinkImg:         linkImg,
+		IsSpecial: 		 0,
+		Position: 		 position,
 		CreateTime:      uint64(time.Now().Unix()),
 		LastUpdatedTime: uint64(time.Now().Unix()),
 	}
@@ -79,6 +85,14 @@ func UpdateLinkByID(linkID, userID uint64, info Link) (err error) {
 		updates["link_desc"] = info.LinkDesc
 	}
 
+	if info.Position != 0 {
+		updates["position"] = info.Position
+	}
+
+	if info.IsSpecial != -1 {
+		updates["is_special"] = info.IsSpecial
+	}
+
 	if info.UseFlag != -1 {
 		updates["use_flag"] = info.UseFlag
 	}
@@ -86,13 +100,11 @@ func UpdateLinkByID(linkID, userID uint64, info Link) (err error) {
 	updates["last_updated_time"] = uint64(time.Now().Unix())
 
 	db := getMysqlConn().Table(LinkTableName)
-	err = db.Model(&link).Updates(updates).Error
+	err = db.Where("id = ? and user_id = ? ", link.ID, link.UserID).Updates(updates).Error
 	if err != nil {
 		logger.Error("update link info ", zap.Any("model", link), zap.Any("updates", updates))
 		return
 	}
-	return
-
 	return
 }
 

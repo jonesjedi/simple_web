@@ -22,9 +22,12 @@ CREATE TABLE `t_user` (
 CREATE TABLE `t_user_link` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '用户id',
+  `link_title` varchar(255) NOT NULL DEFAULT '' COMMENT 'title',
   `link_url` varchar(255) NOT NULL DEFAULT '' COMMENT '用户链接',
   `link_desc` varchar(2048) NOT NULL DEFAULT '' COMMENT '内容简述',
   `link_img` varchar(255) NOT NULL DEFAULT '' COMMENT '链接首图',
+  `position` bigint(20) NOT NULL DEFAULT '0' COMMENT 'position',
+  `is_special` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否有特效',
   `operator` varchar(255) NOT NULL DEFAULT '' COMMENT '操作人',
   `use_flag` tinyint(2) NOT NULL DEFAULT '1' COMMENT '是否有效',
   `create_time` bigint(20) NOT NULL DEFAULT '0' COMMENT '创建时间',

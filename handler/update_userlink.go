@@ -14,6 +14,10 @@ type UpdateUserLinkParam struct {
 	LinkUrl  string `json:"link_url"`
 	LinkImg  string `json:"link_img"`
 	LinkDesc string `json:"link_desc"`
+	Position int `json:"position"`
+	IsValid  int    `form:"is_valid,default=1" json:"is_valid,default=1" binding:"omitempty"`
+	IsSpecial  int    `form:"is_special,default=0" json:"is_special,default=0" binding:"omitempty"`
+
 }
 
 func HandleUpdateUserLinkRequest(c *gin.Context) {
@@ -43,6 +47,13 @@ func HandleUpdateUserLinkRequest(c *gin.Context) {
 	if params.LinkImg != "" {
 		link.LinkImg = params.LinkImg
 	}
+	if params.Position != 0{
+		link.Position = (uint64)(params.Position)
+	}
+
+	link.IsSpecial = params.IsSpecial
+	link.UseFlag = params.IsValid
+
 	linkID := (uint64)(params.ID)
 	err = model.UpdateLinkByID(linkID, userID, link)
 
