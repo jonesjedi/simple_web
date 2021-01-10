@@ -51,6 +51,7 @@ func CreateLink(userID ,position uint64, linkUrl, linkDesc, linkImg, linkTitle s
 		LinkDesc:        linkDesc,
 		LinkImg:         linkImg,
 		IsSpecial: 		 0,
+		UseFlag:         1,
 		Position: 		 position,
 		CreateTime:      uint64(time.Now().Unix()),
 		LastUpdatedTime: uint64(time.Now().Unix()),
@@ -113,17 +114,21 @@ func GetUserLinkList(userID uint64, page, pageSize int) (linkList []*Link, count
 
 	db := getMysqlConn().Table(LinkTableName)
 
+
+	
+
+	err = db.Raw("select * from t_user_link where user_id = ? order by  position desc ",userID).Scan(&linkList).Error
+	if err != nil {
+		logger.Error("get user link from db failed ")
+		return
+	}
+		
 	if userID != 0 {
 		db = db.Where("user_id = ?", userID)
 	}
 	err = db.Count(&count).Error
 	if err != nil {
 		logger.Error("get user link count from db failed ")
-		return
-	}
-	err = db.Find(&linkList).Error
-	if err != nil {
-		logger.Error("get user link from db failed ")
 		return
 	}
 	return

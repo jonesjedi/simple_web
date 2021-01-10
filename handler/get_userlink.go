@@ -60,8 +60,8 @@ func HandleGetUserLinkRequest(c *gin.Context) {
 		"code": 0,
 		"msg":  "success",
 		"data": gin.H{
-			"page":      params.Page,
-			"page_size": params.PageSize,
+			//"page":      params.Page,
+			//"page_size": params.PageSize,
 			"count":     count,
 			"list":      dataList,
 		},
