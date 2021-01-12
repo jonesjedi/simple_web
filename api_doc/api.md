@@ -125,13 +125,13 @@ POST
 ### 7.个人主页
 
 #### 接口地址:
-/api/link/userinfo
+/api/user/userinfo
 #### 请求方式：
 GET
 #### 请求参数：
 |  参数名   | 类型  | 是否必须   | 说明 |
 |  ----  | ----  | ----  | ----  |
-不需要参数，从登录态获取用户信息
+|  user_name  | string  | 是  | 用户名  |
 
 #### 返回
 ```json
@@ -251,6 +251,60 @@ POST
     "data":{}
 }
 ```
+### 11.个人链接列表（不需要登录态，只获取个人编辑的有效链接）
 
+#### 接口地址:
+/api/user/userlinklist
+#### 请求方式：
+GET
+#### 请求参数：
+|  参数名   | 类型  | 是否必须   | 说明 |
+|  ----  | ----  | ----  | ----  |
+|  user_name  | string  | 是  | 用户名  |
+|  page  | int  | 是  | 页码  |
+|  page_size  | int  | 是  | 页大小  |
+#### 返回
+```json
+{
+    "ret":0,    
+    "msg":"succ",
+    "data":[
+        {
+            "count":1,
+            "page":1,
+            "page_size":10,
+            "list":[
+                {
+                    "link_id":111,
+                    "link_url":"http://www.qq.com",
+                    "link_desc":"etss",
+                    "link_img":"首图链接",
+                    "is_special":1,
+                    "position":12
+                }
+            ]
 
+        }
+    ]
+}
+```
 
+### 12.删除个人链接
+
+#### 接口地址:
+/api/link/deletelink
+#### 请求方式：
+POST
+#### 请求参数：
+|  参数名   | 类型  | 是否必须   | 说明 |
+|  ----  | ----  | ----  | ----  |
+|  id  | int  | 是  | id  |
+
+#### 返回
+```json
+{
+    "ret":0,    
+    "msg":"succ",
+    "data":{}
+}
+```
