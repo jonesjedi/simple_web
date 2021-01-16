@@ -15,6 +15,7 @@ type UpdateUserLinkParam struct {
 	LinkImg   string `json:"link_img"`
 	LinkDesc  string `json:"link_desc"`
 	Position  int    `json:"position"`
+	Title     string `json:"title"`
 	UseFlag   int    `form:"use_flag,default=-1" json:"use_flag,default=-1" binding:"omitempty"`
 	IsSpecial int    `form:"is_special,default=-1" json:"is_special,default=-1" binding:"omitempty"`
 }
@@ -45,6 +46,9 @@ func HandleUpdateUserLinkRequest(c *gin.Context) {
 	}
 	if params.LinkImg != "" {
 		link.LinkImg = params.LinkImg
+	}
+	if params.Title != "" {
+		link.LinkTitle = params.Title
 	}
 	if params.Position != 0 {
 		link.Position = (uint64)(params.Position)

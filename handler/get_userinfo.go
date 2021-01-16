@@ -13,14 +13,14 @@ import (
 func HandleGetUserInfoRequest(c *gin.Context) {
 
 	//没有参数
-	userID := c.GetInt("user_id")
-
+	//userID := c.GetInt("user_id")
+	userName := c.DefaultQuery("user_name", "")
 	//根据用户ID获取用户信息
 
-	err, user := model.GetUserInfo("", "", uint64(userID))
+	err, user := model.GetUserInfo("", userName, 0)
 
 	if err != nil {
-		logger.Info("get user info by email failed ", zap.Int("user ID ", userID))
+		logger.Info("get user info by username failed ", zap.String("user name ", userName))
 		c.Error(errcode.ErrEmail)
 		return
 	}

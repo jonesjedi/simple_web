@@ -5,7 +5,6 @@ import (
 	"onbio/logger"
 	"onbio/model"
 	"onbio/utils/errcode"
-	
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -42,14 +41,14 @@ func HandleGetUserLinkRequest(c *gin.Context) {
 	if len(linkList) > 0 {
 		for _, link := range linkList {
 			dataList = append(dataList, gin.H{
-				"id": link.ID,
-				"position":  link.Position,
-				"use_flag":  link.UseFlag,
+				"id":         link.ID,
+				"position":   link.Position,
+				"use_flag":   link.UseFlag,
 				"is_special": link.IsSpecial,
-				"link_url":  link.LinkUrl,
-				"link_desc": link.LinkDesc,
-				"link_img":  link.LinkImg,
-				"link_title":link.LinkTitle,
+				"link_url":   link.LinkUrl,
+				"link_desc":  link.LinkDesc,
+				"link_img":   link.LinkImg,
+				"link_title": link.LinkTitle,
 			})
 		}
 	}
@@ -62,8 +61,8 @@ func HandleGetUserLinkRequest(c *gin.Context) {
 		"data": gin.H{
 			//"page":      params.Page,
 			//"page_size": params.PageSize,
-			"count":     count,
-			"list":      dataList,
+			"count": count,
+			"list":  dataList,
 		},
 	})
 

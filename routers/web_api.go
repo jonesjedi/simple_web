@@ -19,7 +19,8 @@ func InitApiRoute(router *gin.Engine) *gin.Engine {
 
 	appRouter.POST("/user/send_reset_pwd", handler.HandleSendResetPwdEmailRequest)
 	appRouter.POST("/user/reset_pwd", handler.HandleResetPwdRequest)
-
+	appRouter.GET("/user/userinfo", handler.HandleGetUserInfoRequest)
+	appRouter.GET("/user/userlinklist", handler.HandleGetUserLinkWithoutLoginRequest)
 	// 后台服务路由
 	bkRouter := appRouter.Group("/").Use()
 	{
@@ -32,9 +33,10 @@ func InitApiRoute(router *gin.Engine) *gin.Engine {
 	{
 		linkRouter.POST("/updateinfo", handler.HandleUpdateUserInfoRequest)
 		linkRouter.GET("/userlink", handler.HandleGetUserLinkRequest)
-		linkRouter.GET("/userinfo", handler.HandleGetUserInfoRequest)
+		//linkRouter.GET("/userinfo", handler.HandleGetUserInfoRequest)
 		linkRouter.POST("/updatelink", handler.HandleUpdateUserLinkRequest)
 		linkRouter.POST("/createlink", handler.HandleCreateUserLinkRequest)
+		linkRouter.POST("/deletelink", handler.HandleDeleteUserLinkRequest)
 	}
 
 	return router
