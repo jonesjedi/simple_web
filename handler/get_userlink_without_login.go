@@ -57,6 +57,8 @@ func HandleGetUserLinkWithoutLoginRequest(c *gin.Context) {
 				"link_title": link.LinkTitle,
 			})
 		}
+	} else {
+		dataList = []gin.H{}
 	}
 
 	//

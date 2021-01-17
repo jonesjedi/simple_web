@@ -42,5 +42,8 @@ var (
 	ErrEmailValidLimit   = StandardError{11013, "邮箱验证次数超过限制"}
 	ErrCodeInValid       = StandardError{11014, "code 无效"}
 	ErrUserExisted       = StandardError{11015, "用户已经存在"}
-	ErrEmailExisted       = StandardError{11016, "邮箱已经被注册"}
+	ErrEmailExisted      = StandardError{11016, "邮箱已经被注册"}
+	ErrEmailNotConfirmed = StandardError{11017, "email not valid"}
+	ErrUserNameInvalid   = StandardError{11018, "username is invalid"}
+	ErrUploadFileFailed  = StandardError{11019, "username is invalid"}
 )

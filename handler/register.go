@@ -17,6 +17,22 @@ type RegisterParam struct {
 	Email string `json:"email" binding:"required"`
 }
 
+func checkIfUserNameValid(userName string) (isValid bool) {
+
+	len := len(userName)
+
+	if len > 30 || len < 6 {
+		return false
+	}
+
+	for _, r := range userName {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && r != '.' && r != '_' {
+			return false
+		}
+	}
+	return true
+}
+
 func HandleRegisteRequest(c *gin.Context) {
 
 	var params RegisterParam
@@ -33,6 +49,14 @@ func HandleRegisteRequest(c *gin.Context) {
 	//1.check params
 	if userName == "" || userPwd == "" || email == "" {
 		c.Error(errcode.ErrParam)
+		return
+	}
+
+	isUserNameValid := checkIfUserNameValid(userName)
+
+	if !isUserNameValid {
+		logger.Info("userName is invalid ", zap.String("user", userName))
+		c.Error(errcode.ErrUserNameInvalid)
 		return
 	}
 

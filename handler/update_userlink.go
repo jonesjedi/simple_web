@@ -7,6 +7,7 @@ import (
 	"onbio/utils/errcode"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type UpdateUserLinkParam struct {
@@ -16,14 +17,16 @@ type UpdateUserLinkParam struct {
 	LinkDesc  string `json:"link_desc"`
 	Position  int    `json:"position"`
 	Title     string `json:"title"`
-	UseFlag   int    `form:"use_flag,default=-1" json:"use_flag,default=-1" binding:"omitempty"`
-	IsSpecial int    `form:"is_special,default=-1" json:"is_special,default=-1" binding:"omitempty"`
+	UseFlag   int    `form:"use_flag,default=-1" json:"use_flag,default=-1"`
+	IsSpecial int    `form:"is_special,default=-1" json:"is_special,default=-1"`
 }
 
 func HandleUpdateUserLinkRequest(c *gin.Context) {
 
 	var params UpdateUserLinkParam
-	err := c.Bind(&params)
+	params.UseFlag = -1
+	params.IsSpecial = -1
+	err := c.ShouldBindJSON(&params)
 	if err != nil {
 		logger.Error("params err ")
 		c.Error(errcode.ErrParam)
@@ -59,7 +62,7 @@ func HandleUpdateUserLinkRequest(c *gin.Context) {
 	//if params.UseFlag != -1 {
 	link.UseFlag = params.UseFlag
 	//}
-
+	logger.Error("link info", zap.Any("link", link))
 	linkID := (uint64)(params.ID)
 	err = model.UpdateLinkByID(linkID, userID, link)
 

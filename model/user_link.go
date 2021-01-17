@@ -132,6 +132,13 @@ func GetUserLinkListWithPage(userID uint64, page, pageSize int) (linkList []*Lin
 		db = db.Where("user_id = ?", userID)
 	}
 	db = db.Where("use_flag = 1")
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logger.Error("get user link count from db failed ")
+		return
+	}
+
 	limit := pageSize
 	offset := (page - 1) * pageSize
 
@@ -147,11 +154,6 @@ func GetUserLinkListWithPage(userID uint64, page, pageSize int) (linkList []*Lin
 		return
 	}
 
-	err = db.Count(&count).Error
-	if err != nil {
-		logger.Error("get user link count from db failed ")
-		return
-	}
 	return
 }
 

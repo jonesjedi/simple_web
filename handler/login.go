@@ -64,6 +64,7 @@ func HandleLoginRequest(c *gin.Context) {
 	sessionContent.IsConfirmed = user.IsConfirmed
 	sessionContent.UserAvatar = user.UserAvatar
 	sessionContent.UserID = user.ID
+	sessionContent.UserName = user.UserName
 	sessionContent.UserLink = user.UserLink
 	sessionContent.LoginTime = uint64(time.Now().Unix())
 

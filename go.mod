@@ -12,6 +12,7 @@ require (
 	github.com/json-iterator/go v1.1.9
 	github.com/pkg/errors v0.9.1
 	github.com/satori/go.uuid v1.2.0
+	github.com/ufilesdk-dev/ufile-gosdk v1.0.1
 	go.uber.org/zap v1.16.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

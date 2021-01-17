@@ -7,6 +7,7 @@ import (
 	"onbio/model"
 	"onbio/redis"
 	"onbio/utils/errcode"
+	"onbio/utils/mailsender"
 
 	"github.com/gin-gonic/gin"
 	redigo "github.com/gomodule/redigo/redis"
@@ -35,7 +36,7 @@ func HandleSendResetPwdEmailRequest(c *gin.Context) {
 	}
 
 	//判断是哪个用户的email
-	err, user := model.GetUserInfo(params.UserEmail, "",0)
+	err, user := model.GetUserInfo(params.UserEmail, "", 0)
 
 	if err != nil {
 		logger.Info("get user info by email failed ", zap.String("user email", params.UserEmail))
@@ -55,6 +56,21 @@ func HandleSendResetPwdEmailRequest(c *gin.Context) {
 
 	//没有接口，先打个log
 	logger.Info("reset  url ", zap.String("url", sendUrl))
+
+	var ms mailsender.MailSender = &mailsender.Mail{
+		Sender:    "sender@onb.io",  // 可以自定义
+		Recipient: params.UserEmail, // 如果处于Sandbox只能发送已验证过的邮箱
+		Subject:   "onbio reset pwd email",
+		HTMLBody:  sendUrl,
+		TextBody:  sendUrl, // 不支持HTML的话会返回这个
+		CharSet:   "UTF-8", // 固定字符码
+	}
+	sendRet := ms.SendMail()
+	if !sendRet {
+		logger.Error("send mail failed ")
+		c.Error(errcode.ErrInternal)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,

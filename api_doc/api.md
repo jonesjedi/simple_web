@@ -308,3 +308,25 @@ POST
     "data":{}
 }
 ```
+
+
+### 13.上传图片
+
+#### 接口地址:
+/api/link/upload
+#### 请求方式：
+POST multipart/form-data 表单
+#### 请求参数：
+|  参数名   | 类型  | 是否必须   | 说明 |
+|  ----  | ----  | ----  | ----  |
+|  upload  | file  | 是  | file  |
+
+#### 返回
+```json
+{
+    "ret":0,    
+    "msg":"succ",
+    "url":"http://www.qq.com"
+}
+```
+
