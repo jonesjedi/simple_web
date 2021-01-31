@@ -21,6 +21,12 @@ import (
 2.将用户数据更新为已验证
 
 **/
+
+const (
+	Validate_Succ_URL = "http://onb.io/login/mailPassed"
+	Validate_Fail_URL = "http://onb.io/"
+)
+
 func HandleValidateEmailRequest(c *gin.Context) {
 	code := c.DefaultQuery("code", "")
 
@@ -43,18 +49,21 @@ func HandleValidateEmailRequest(c *gin.Context) {
 
 	var user model.User
 	user.IsConfirmed = 1
-	err = model.UpdateUserInfoByID(userId,user)
+	err = model.UpdateUserInfoByID(userId, user)
 
 	if err != nil {
 		logger.Error("UpdateUserInfoByID failed ", zap.Error(err))
-		c.Error(errcode.ErrInternal)
+		//c.Error(errcode.ErrInternal)
+		c.Redirect(http.StatusFound, Validate_Fail_URL)
 		return
 	}
+	c.Redirect(http.StatusFound, Validate_Succ_URL)
+	/***直接跳转了，不要返回数据
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "success",
 		"data": gin.H{},
-	})
+	})***/
 }
 
 func ValidateCode(code string) (err error, valid ValidContent) {
@@ -79,8 +88,8 @@ func ValidateCode(code string) (err error, valid ValidContent) {
 	//删掉这个code,只能验证一次
 	_, err = redigo.Int(conn.Do("DEL", key))
 	if err != nil && err != redigo.ErrNil {
-			logger.Error("err del redis", zap.String("key", key), zap.Error(err))
-			return
+		logger.Error("err del redis", zap.String("key", key), zap.Error(err))
+		return
 	}
 
 	//反序列化

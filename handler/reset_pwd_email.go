@@ -6,8 +6,10 @@ import (
 	logger "onbio/logger"
 	"onbio/model"
 	"onbio/redis"
+	"onbio/utils/email_html"
 	"onbio/utils/errcode"
 	"onbio/utils/mailsender"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	redigo "github.com/gomodule/redigo/redis"
@@ -17,12 +19,12 @@ import (
 )
 
 const (
-	USER_EMAIL_RESET_PWD_URL   = "http://onb.io/user/reset_pwd?code=%s"
+	USER_EMAIL_RESET_PWD_URL   = "http://onb.io/login/setPassWord?code=%s"
 	USER_RESET_PWD_CONTENT_PRE = "user_reset_pwd:%s"
 )
 
 type ResetPwdEmailParam struct {
-	UserEmail string `json:"user_email" binding:"required"`
+	userEmailOrUserName string `json:"user_email" binding:"required"`
 }
 
 func HandleSendResetPwdEmailRequest(c *gin.Context) {
@@ -34,18 +36,22 @@ func HandleSendResetPwdEmailRequest(c *gin.Context) {
 		c.Error(errcode.ErrParam)
 		return
 	}
-
+	var user model.User
+	//如果包含@，就是邮箱，因为用户名现在不能包含@
+	if strings.Contains(params.userEmailOrUserName, "@") {
+		err, user = model.GetUserInfo(params.userEmailOrUserName, "", 0)
+	} else {
+		err, user = model.GetUserInfo("", params.userEmailOrUserName, 0)
+	}
 	//判断是哪个用户的email
-	err, user := model.GetUserInfo(params.UserEmail, "", 0)
-
 	if err != nil {
-		logger.Info("get user info by email failed ", zap.String("user email", params.UserEmail))
+		logger.Info("get user info by email failed ", zap.String("user email", params.userEmailOrUserName))
 		c.Error(errcode.ErrEmail)
 		return
 	}
 
 	//到这里，就可以发邮件了
-	err, code := GenValidCode(user.ID, params.UserEmail)
+	err, code := GenValidCode(user.ID, params.userEmailOrUserName)
 	if err != nil {
 		logger.Error("gen valid code failed ,", zap.Error(err))
 		c.Error(errcode.ErrInternal)
@@ -57,13 +63,20 @@ func HandleSendResetPwdEmailRequest(c *gin.Context) {
 	//没有接口，先打个log
 	logger.Info("reset  url ", zap.String("url", sendUrl))
 
+	emailBody, err := email_html.GenerateHtml(user.UserName, sendUrl, 2)
+
+	if err != nil {
+		logger.Error("generate email body failed ", zap.String("user", user.UserName))
+		c.Error(errcode.ErrInternal)
+		return
+	}
 	var ms mailsender.MailSender = &mailsender.Mail{
-		Sender:    "sender@onb.io",  // 可以自定义
-		Recipient: params.UserEmail, // 如果处于Sandbox只能发送已验证过的邮箱
+		Sender:    "Onbio<welcome@onb.io>", // 可以自定义
+		Recipient: user.Email,              // 如果处于Sandbox只能发送已验证过的邮箱
 		Subject:   "onbio reset pwd email",
-		HTMLBody:  sendUrl,
-		TextBody:  sendUrl, // 不支持HTML的话会返回这个
-		CharSet:   "UTF-8", // 固定字符码
+		HTMLBody:  emailBody,
+		TextBody:  emailBody, // 不支持HTML的话会返回这个
+		CharSet:   "UTF-8",   // 固定字符码
 	}
 	sendRet := ms.SendMail()
 	if !sendRet {

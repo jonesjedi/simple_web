@@ -13,6 +13,7 @@ import (
 
 const (
 	UserTableName = "t_user"
+	UserLinkPre   = "https://onb.io/"
 )
 
 /***
@@ -59,11 +60,14 @@ func CreateUser(userName, userAvatar, userPwd, email string) error {
 	//md5sum
 	userPwd, _ = utils.Md5Sum(userPwd)
 
+	userLink := UserLinkPre + userName
+
 	newUser := User{
 		UserName:        userName,
 		UserPwd:         userPwd,
 		Email:           email,
 		UserAvatar:      userAvatar,
+		UserLink:        userLink,
 		CreateTime:      uint64(time.Now().Unix()),
 		LastUpdatedTime: uint64(time.Now().Unix()),
 	}

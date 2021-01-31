@@ -45,6 +45,14 @@ func main() {
 		})
 	})
 
+	//暂时放在这里导入敏感词，后面应该做到管理端
+	/*
+		err := import_sensitive.ImportSensitiveWordFromExcel("./admin/import_sensitive/OnBio_sensitive.xlsx")
+
+		if err != nil {
+			logger.Error("import sensitive word failed", zap.Error(err))
+		}*/
+
 	routers.InitApiRoute(router)
 
 	gin.SetMode(gin.ReleaseMode) //always release

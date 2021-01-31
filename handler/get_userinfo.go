@@ -25,6 +25,10 @@ func HandleGetUserInfoRequest(c *gin.Context) {
 		return
 	}
 
+	if user.UserLink == "" {
+		user.UserLink = model.UserLinkPre + user.UserName
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "success",
@@ -34,6 +38,7 @@ func HandleGetUserInfoRequest(c *gin.Context) {
 			"user_avatar":  user.UserAvatar,
 			"is_confirmed": user.IsConfirmed,
 			"user_link":    user.UserLink,
+			"user_email":   user.Email,
 		},
 	})
 

@@ -8,6 +8,7 @@ import (
 	"onbio/utils/errcode"
 	"onbio/utils/htmlparser"
 	"onbio/utils/uploader"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -37,21 +38,26 @@ func HandleCreateUserLinkRequest(c *gin.Context) {
 
 	userID := (uint64)(c.GetInt("user_id"))
 
-	isConfirmed := c.GetInt("is_confirmed")
+	//isConfirmed := c.GetInt("is_confirmed")
 
 	userName := c.GetString("user_name")
-
+	/** 没确认可以创建链接
 	if isConfirmed == 0 {
 		logger.Info("you are not confirmed before")
 		c.Error(errcode.ErrEmailNotConfirmed)
 		return
+	}*/
+	linkUrl := params.LinkUrl
+	//判断下前缀，如果没传http或者https，就默认是https
+	if !strings.Contains(linkUrl, "http") {
+		linkUrl = "https://" + linkUrl
 	}
 
 	//根据传入的URL拉取对应的信息
-	title, desc, img, err := htmlparser.ParseUrl(params.LinkUrl)
+	title, desc, img, err := htmlparser.ParseUrl(linkUrl)
 
 	if err != nil {
-		logger.Error("ParseUrl failed ", zap.String("url", params.LinkUrl), zap.Error(err))
+		logger.Error("ParseUrl failed ", zap.String("url", linkUrl), zap.Error(err))
 		c.Error(errcode.ErrInternal)
 		return
 	}
@@ -76,7 +82,7 @@ func HandleCreateUserLinkRequest(c *gin.Context) {
 
 	}
 
-	err = model.CreateLink(userID, params.Position, params.LinkUrl, desc, remoteUrl, title)
+	err = model.CreateLink(userID, params.Position, linkUrl, desc, remoteUrl, title)
 
 	if err != nil {
 		logger.Error("crate link failed ", zap.Any("params", params), zap.Uint64("userID", userID))

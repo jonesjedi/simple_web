@@ -6,6 +6,7 @@ import (
 	logger "onbio/logger"
 	"onbio/model"
 	"onbio/redis"
+	"onbio/utils/email_html"
 	"onbio/utils/errcode"
 	"onbio/utils/ratelimiter"
 
@@ -21,7 +22,7 @@ import (
 
 const (
 	USER_SEND_VALID_EMAIL_LIMIT = "user_send_valid_email_limit:%s"
-	USER_EMAIL_VALID_URL        = "http://onbio.kris.drczh.cn/api/user/validate_email?code=%s"
+	USER_EMAIL_VALID_URL        = "http://onbio.io/api/user/validate_email?code=%s"
 	USER_VALID_CONTENT_PRE      = "user_valid:%s"
 )
 
@@ -93,13 +94,22 @@ func HandleSendValidateEmailRequest(c *gin.Context) {
 	//没有接口，先打个log
 	logger.Info("valid url ", zap.String("url", sendUrl))
 
+	//高级一点，这里用html
+	emailBody, err := email_html.GenerateHtml(user.UserName, sendUrl, 1)
+
+	if err != nil {
+		logger.Error("generate email body failed ", zap.String("user", user.UserName))
+		c.Error(errcode.ErrInternal)
+		return
+	}
+
 	var ms mailsender.MailSender = &mailsender.Mail{
-		Sender:    "sender@onb.io",  // 可以自定义
-		Recipient: params.UserEmail, // 如果处于Sandbox只能发送已验证过的邮箱
+		Sender:    "Onbio<welcome@onb.io>", // 可以自定义
+		Recipient: params.UserEmail,        // 如果处于Sandbox只能发送已验证过的邮箱
 		Subject:   "onbio validate email",
-		HTMLBody:  sendUrl,
-		TextBody:  sendUrl, // 不支持HTML的话会返回这个
-		CharSet:   "UTF-8", // 固定字符码
+		HTMLBody:  emailBody,
+		TextBody:  emailBody, // 不支持HTML的话会返回这个
+		CharSet:   "UTF-8",   // 固定字符码
 	}
 	sendRet := ms.SendMail()
 	if !sendRet {

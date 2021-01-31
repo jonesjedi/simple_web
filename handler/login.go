@@ -78,7 +78,7 @@ func HandleLoginRequest(c *gin.Context) {
 	defer conn.Close()
 
 	key := fmt.Sprintf(services.USER_SESSION_REDIS_PRE, sessionKey)
-	_, err = conn.Do("SET", key, string(sessionStr))
+	_, err = conn.Do("SET", key, string(sessionStr), "EX", 86400)
 	if err != nil && err != redigo.ErrNil {
 		logger.Error("err set redis ", zap.String("key", key), zap.Error(err))
 		c.Error(errcode.ErrRedisOper)

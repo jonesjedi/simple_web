@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"onbio/logger"
 	"onbio/utils/errcode"
 	"onbio/utils/uploader"
 
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 )
 
@@ -25,7 +27,7 @@ func HandleUploadFile(c *gin.Context) {
 		return
 	}
 
-	fileName := file.Filename
+	fileName := fmt.Sprintf("%s", uuid.NewV4()) + "_" + file.Filename
 	fileOnServer := TempFilePath + fileName
 	err = c.SaveUploadedFile(file, fileOnServer)
 

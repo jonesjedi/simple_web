@@ -32,6 +32,11 @@ func HandleGetUserLinkWithoutLoginRequest(c *gin.Context) {
 		c.Error(errcode.ErrEmail)
 		return
 	}
+	if user.IsConfirmed == 0 {
+		logger.Info("user is not confirmed", zap.String("user name ", userName))
+		c.Error(errcode.ErrUserIsNotConfirmed)
+		return
+	}
 
 	userID := user.ID
 

@@ -4,10 +4,16 @@ import (
 	"net/http"
 	"onbio/logger"
 	"onbio/model"
+	"onbio/redis"
 	"onbio/utils/errcode"
 
 	"github.com/gin-gonic/gin"
+	redigo "github.com/gomodule/redigo/redis"
 	"go.uber.org/zap"
+)
+
+const (
+	USER_SENSITIVE_WORD_KEY = "onbio_user_sensitive_word"
 )
 
 type RegisterParam struct {
@@ -22,15 +28,40 @@ func checkIfUserNameValid(userName string) (isValid bool) {
 	len := len(userName)
 
 	if len > 30 || len < 6 {
+		logger.Info("use name len is invalid", zap.String("user", userName))
 		return false
 	}
 
 	for _, r := range userName {
-		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && r != '.' && r != '_' {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r != '.') && (r != '_') {
+			logger.Info("use name content is invalid", zap.String("user", userName))
 			return false
 		}
 	}
+
 	return true
+}
+
+func checkIfUserNameSensitve(userName string) (isSensi bool) {
+	//检查是否敏感词
+	// 根据cookie获取用户信息
+	conn := redis.GetConn("onbio")
+	defer conn.Close()
+
+	key := USER_SENSITIVE_WORD_KEY
+
+	isSensitive, err := redigo.Int(conn.Do("sismember", key, userName))
+
+	if err != nil {
+		logger.Error("check if sensitive err .", zap.Error(err))
+		return true
+	}
+	logger.Info("is sensitive ", zap.Int("is sensitive", isSensitive))
+	if isSensitive == 1 {
+		logger.Info("check if sensitive return true", zap.String("user", userName))
+		return true
+	}
+	return false
 }
 
 func HandleRegisteRequest(c *gin.Context) {
@@ -57,6 +88,14 @@ func HandleRegisteRequest(c *gin.Context) {
 	if !isUserNameValid {
 		logger.Info("userName is invalid ", zap.String("user", userName))
 		c.Error(errcode.ErrUserNameInvalid)
+		return
+	}
+	logger.Info("check if sensitive ")
+	isSensitive := checkIfUserNameSensitve(userName)
+
+	if isSensitive {
+		logger.Info("userName is sensitive ", zap.String("user", userName))
+		c.Error(errcode.ErrUserIsSensitive)
 		return
 	}
 
