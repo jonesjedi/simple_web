@@ -22,7 +22,7 @@ import (
 
 const (
 	USER_SEND_VALID_EMAIL_LIMIT = "user_send_valid_email_limit:%s"
-	USER_EMAIL_VALID_URL        = "http://onbio.io/api/user/validate_email?code=%s"
+	USER_EMAIL_VALID_URL        = "http://onb.io/api/user/validate_email?code=%s"
 	USER_VALID_CONTENT_PRE      = "user_valid:%s"
 )
 

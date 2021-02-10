@@ -56,6 +56,7 @@ func OnbioLoginAuth() gin.HandlerFunc {
 		c.Set("user_name", session.UserName)
 		c.Set("user_id", userId)
 		c.Set("is_confirmed", session.IsConfirmed)
+		c.Set("cookie_key", userSession)
 		c.Next()
 	}
 }

@@ -38,6 +38,7 @@ func InitApiRoute(router *gin.Engine) *gin.Engine {
 		linkRouter.POST("/createlink", handler.HandleCreateUserLinkRequest)
 		linkRouter.POST("/deletelink", handler.HandleDeleteUserLinkRequest)
 		linkRouter.POST("/upload", handler.HandleUploadFile)
+		linkRouter.GET("/logout", handler.HandleLogoutRequest)
 	}
 
 	return router

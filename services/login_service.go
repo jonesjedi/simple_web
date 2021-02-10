@@ -2,7 +2,7 @@ package services
 
 const (
 	USER_SESSION_REDIS_PRE = "onbio_session:%s"
-	USER_REDIRECT_URL      = "http://www.qq.com"
+	USER_REDIRECT_URL      = "https://www.onb.io"
 )
 
 type SessionContent struct {

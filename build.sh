@@ -6,8 +6,9 @@ cd onbio
 mkdir bin
 mkdir conf
 mkdir tools
+mkdir logs
 cp  ../../bin/*  bin/
-cp  ../../conf.json conf/
+cp  ../../conf/* conf/
 cp  ../../tools/*  tools
 
 cd ..
