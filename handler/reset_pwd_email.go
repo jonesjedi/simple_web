@@ -24,7 +24,7 @@ const (
 )
 
 type ResetPwdEmailParam struct {
-	userEmailOrUserName string `json:"user_email" binding:"required"`
+	UserEmailOrUserName string `json:"user_email" binding:"required"`
 }
 
 func HandleSendResetPwdEmailRequest(c *gin.Context) {
@@ -38,20 +38,21 @@ func HandleSendResetPwdEmailRequest(c *gin.Context) {
 	}
 	var user model.User
 	//如果包含@，就是邮箱，因为用户名现在不能包含@
-	if strings.Contains(params.userEmailOrUserName, "@") {
-		err, user = model.GetUserInfo(params.userEmailOrUserName, "", 0)
+	logger.Info("params", zap.Any("params", params), zap.String("user", params.UserEmailOrUserName))
+	if strings.Contains(params.UserEmailOrUserName, "@") {
+		err, user = model.GetUserInfo(params.UserEmailOrUserName, "", 0)
 	} else {
-		err, user = model.GetUserInfo("", params.userEmailOrUserName, 0)
+		err, user = model.GetUserInfo("", params.UserEmailOrUserName, 0)
 	}
 	//判断是哪个用户的email
 	if err != nil {
-		logger.Info("get user info by email failed ", zap.String("user email", params.userEmailOrUserName))
+		logger.Info("get user info by email failed ", zap.String("user email", params.UserEmailOrUserName))
 		c.Error(errcode.ErrEmail)
 		return
 	}
 
 	//到这里，就可以发邮件了
-	err, code := GenResetPwdCode(user.ID, params.userEmailOrUserName)
+	err, code := GenResetPwdCode(user.ID, params.UserEmailOrUserName)
 	if err != nil {
 		logger.Error("gen valid code failed ,", zap.Error(err))
 		c.Error(errcode.ErrInternal)

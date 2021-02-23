@@ -17,19 +17,19 @@ const (
 func (p EmailType) GetContent() string {
 	switch p {
 	case Register_Account:
-		return "Thanks for signing up to Linktree, great to have you!"
+		return "Thanks for signing up, great to have you!"
 	case Reset_Pwd:
 		return "You are trying to reset your password"
 	default:
 		return "UNKNOWN"
 	}
 }
-func (p EmailType) GetIntroContent() string {
+func (p EmailType) GetIntroContent(url string) string {
 	switch p {
 	case Register_Account:
-		return "Please verify your email address by clicking the link below."
+		return "Please click on the button below or open this link (" + url + ") to verify your email address."
 	case Reset_Pwd:
-		return "To reset your password, please click here"
+		return "Please click on the button below or open this link (" + url + ") to set a new password"
 	default:
 		return "UNKNOWN"
 	}
@@ -55,7 +55,7 @@ func GenerateHtml(userName, url string, emailType EmailType) (emailBody string, 
 			Intros: intros,
 			Actions: []hermes.Action{
 				{
-					Instructions: emailType.GetIntroContent(),
+					Instructions: emailType.GetIntroContent(url),
 					Button: hermes.Button{
 						Color: "#22BC66", // Optional action button color
 						Text:  "Go",

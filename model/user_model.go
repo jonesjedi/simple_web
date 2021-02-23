@@ -152,6 +152,7 @@ func UpdateUserInfoByID(userID uint64, info User) (err error) {
 
 func GetUserInfo(userEmail, userName string, userID uint64) (err error, user User) {
 	db := getMysqlConn().Table(UserTableName)
+	//db.LogMode(true)
 	if len(userName) != 0 {
 		db = db.Where("user_name = ?", userName)
 	}
