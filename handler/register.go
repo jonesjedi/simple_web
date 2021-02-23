@@ -1,14 +1,19 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"onbio/logger"
 	"onbio/model"
 	"onbio/redis"
+	"onbio/services"
 	"onbio/utils/errcode"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	redigo "github.com/gomodule/redigo/redis"
+	jsoniter "github.com/json-iterator/go"
+	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 )
 
@@ -33,7 +38,7 @@ func checkIfUserNameValid(userName string) (isValid bool) {
 	}
 
 	for _, r := range userName {
-		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r != '.') && (r != '_') {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || r > '9') && (r != '.') && (r != '_') {
 			logger.Info("use name content is invalid", zap.String("user", userName))
 			return false
 		}
@@ -135,6 +140,51 @@ func HandleRegisteRequest(c *gin.Context) {
 		c.Error(errcode.ErrDbQuery)
 		return
 	}
+
+	//注册成功之后，自动登录一次
+	err, user := model.GetUserInfo("", userName, 0)
+
+	if err != nil {
+		logger.Info("get user info by username failed ", zap.String("user name ", userName))
+		c.Error(errcode.ErrEmail)
+		return
+	}
+
+	//先生成一个cookie
+	sessionKey := fmt.Sprintf("%s", uuid.NewV4())
+
+	var sessionContent services.SessionContent
+	sessionContent.Email = user.Email
+	sessionContent.IsConfirmed = user.IsConfirmed
+	sessionContent.UserAvatar = user.UserAvatar
+	sessionContent.UserID = user.ID
+	sessionContent.UserName = user.UserName
+	sessionContent.UserLink = user.UserLink
+	sessionContent.LoginTime = uint64(time.Now().Unix())
+
+	var (
+		jsons = jsoniter.ConfigCompatibleWithStandardLibrary
+	)
+	//序列化
+	sessionStr, err := jsons.Marshal(sessionContent)
+	if err != nil {
+		logger.Error("err json Marshal", zap.Any("session", sessionContent))
+		return
+	}
+	conn := redis.GetConn("onbio")
+	defer conn.Close()
+
+	key := fmt.Sprintf(services.USER_SESSION_REDIS_PRE, sessionKey)
+	_, err = conn.Do("SET", key, string(sessionStr), "EX", 86400)
+	if err != nil && err != redigo.ErrNil {
+		logger.Error("err set redis ", zap.String("key", key), zap.Error(err))
+		c.Error(errcode.ErrRedisOper)
+		return
+	}
+
+	//设置cookie
+	c.SetCookie("onbio_user", sessionKey, 86400, "/", ".onb.io", false, true)
+
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "success",

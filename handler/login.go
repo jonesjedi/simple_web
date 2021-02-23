@@ -8,6 +8,7 @@ import (
 	"onbio/redis"
 	"onbio/services"
 	"onbio/utils/errcode"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,8 +19,9 @@ import (
 )
 
 type LoginParam struct {
-	UserName string `json:"user_name" binding:"required"`
-	UserPwd  string `json:"user_pwd" binding:"required"`
+	UserName     string `json:"user_name" binding:"required"`
+	UserPwd      string `json:"user_pwd" binding:"required"`
+	IsRemembered int    `json:"is_remembered"`
 }
 
 //改成普通post请求
@@ -43,11 +45,21 @@ func HandleLoginRequest(c *gin.Context) {
 		c.Error(errcode.ErrParam)
 		return
 	}
+	sessionTime := 86400
+	if params.IsRemembered > 0 {
+		sessionTime = 30 * 86400
+	}
 
 	//原本这里要校验登录次数 。先打个桩，暂时不实现
 
 	//检查登录密码
-	err, user := model.CheckUserPwd(userName, userPwd)
+	//如果是邮箱的话
+	var user model.User
+	if strings.Contains(userName, "@") {
+		err, user = model.CheckUserPwd("", userName, userPwd)
+	} else {
+		err, user = model.CheckUserPwd(userName, "", userPwd)
+	}
 
 	if err != nil {
 		logger.Error("check user pwd failed ", zap.Error(err))
@@ -78,7 +90,7 @@ func HandleLoginRequest(c *gin.Context) {
 	defer conn.Close()
 
 	key := fmt.Sprintf(services.USER_SESSION_REDIS_PRE, sessionKey)
-	_, err = conn.Do("SET", key, string(sessionStr), "EX", 86400)
+	_, err = conn.Do("SET", key, string(sessionStr), "EX", sessionTime)
 	if err != nil && err != redigo.ErrNil {
 		logger.Error("err set redis ", zap.String("key", key), zap.Error(err))
 		c.Error(errcode.ErrRedisOper)
@@ -86,7 +98,7 @@ func HandleLoginRequest(c *gin.Context) {
 	}
 
 	//设置cookie
-	c.SetCookie("onbio_user", sessionKey, 86400, "/", ".onb.io", false, true)
+	c.SetCookie("onbio_user", sessionKey, sessionTime, "/", ".onb.io", false, true)
 
 	//跳转
 	//c.Redirect(http.StatusFound, services.USER_REDIRECT_URL)
@@ -94,6 +106,8 @@ func HandleLoginRequest(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "success",
-		"data": gin.H{},
+		"data": gin.H{
+			"user_name": user.UserName,
+		},
 	})
 }

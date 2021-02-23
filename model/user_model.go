@@ -179,13 +179,16 @@ func GetUserInfo(userEmail, userName string, userID uint64) (err error, user Use
 
 }
 
-func CheckUserPwd(userName, userPwd string) (err error, user User) {
+func CheckUserPwd(userName, userEmail, userPwd string) (err error, user User) {
 
 	//md5sum
 	userPwd, _ = utils.Md5Sum(userPwd)
 	db := getMysqlConn().Table(UserTableName)
 	if len(userName) != 0 {
 		db = db.Where("user_name = ?", userName)
+	}
+	if len(userEmail) != 0 {
+		db = db.Where("email = ?", userEmail)
 	}
 
 	err = db.Scan(&user).Error

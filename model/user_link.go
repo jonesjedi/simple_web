@@ -53,7 +53,7 @@ func DeleteUserLink(userID, linkID uint64) (err error) {
 	return
 }
 
-func CreateLink(userID, position uint64, linkUrl, linkDesc, linkImg, linkTitle string) (err error) {
+func CreateLink(userID, position uint64, linkUrl, linkDesc, linkImg, linkTitle string) (ID uint64, err error) {
 
 	newLink := Link{
 		UserID:          userID,
@@ -72,7 +72,28 @@ func CreateLink(userID, position uint64, linkUrl, linkDesc, linkImg, linkTitle s
 	db = db.Create(&newLink)
 	if db.Error != nil {
 		logger.Error("CreateLink::Find error: %s", zap.Error(db.Error))
-		return db.Error
+		return 0, db.Error
+	}
+	ID = newLink.ID
+	return
+}
+
+//获取单个链接详情
+func GetUserLinkByID(id uint64) (linkItem Link, err error) {
+	if id == 0 {
+		return
+	}
+	db := getMysqlConn().Table(LinkTableName)
+
+	db = db.Where("id = ?", id)
+
+	db = db.Where("use_flag = 1")
+
+	err = db.First(&linkItem).Error
+
+	if err != nil {
+		logger.Error("get user link by id failed ", zap.Uint64("id", id))
+		return
 	}
 	return
 }
@@ -89,15 +110,15 @@ func UpdateLinkByID(linkID, userID uint64, info Link) (err error) {
 	if info.LinkUrl != "" {
 		updates["link_url"] = info.LinkUrl
 	}
-	if info.LinkImg != "" {
+	if info.LinkImg != "default" {
 		updates["link_img"] = info.LinkImg
 	}
 
-	if info.LinkDesc != "" {
+	if info.LinkDesc != "default" {
 		updates["link_desc"] = info.LinkDesc
 	}
 
-	if info.LinkTitle != "" {
+	if info.LinkTitle != "default" {
 		updates["link_title"] = info.LinkTitle
 	}
 

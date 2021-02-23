@@ -49,7 +49,8 @@ func HandleCreateUserLinkRequest(c *gin.Context) {
 	}*/
 	linkUrl := params.LinkUrl
 	//判断下前缀，如果没传http或者https，就默认是https
-	if !strings.Contains(linkUrl, "http") {
+	if !strings.Contains(linkUrl, "http") && !strings.Contains(linkUrl, "tel") &&
+		!strings.Contains(linkUrl, "sms") && !strings.Contains(linkUrl, "mailto") {
 		linkUrl = "https://" + linkUrl
 	}
 
@@ -82,10 +83,18 @@ func HandleCreateUserLinkRequest(c *gin.Context) {
 
 	}
 
-	err = model.CreateLink(userID, params.Position, linkUrl, desc, remoteUrl, title)
+	id, err := model.CreateLink(userID, params.Position, linkUrl, desc, remoteUrl, title)
 
 	if err != nil {
-		logger.Error("crate link failed ", zap.Any("params", params), zap.Uint64("userID", userID))
+		logger.Error("create link failed ", zap.Any("params", params), zap.Uint64("userID", userID))
+		c.Error(errcode.ErrInternal)
+		return
+	}
+
+	//把刚写入的记录查出来，作为回显
+	link, err := model.GetUserLinkByID(id)
+	if err != nil {
+		logger.Error("create link failed ", zap.Any("id", id))
 		c.Error(errcode.ErrInternal)
 		return
 	}
@@ -93,7 +102,16 @@ func HandleCreateUserLinkRequest(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "success",
-		"data": gin.H{},
+		"data": gin.H{
+			"id":         link.ID,
+			"position":   link.Position,
+			"use_flag":   link.UseFlag,
+			"is_special": link.IsSpecial,
+			"link_url":   link.LinkUrl,
+			"link_desc":  link.LinkDesc,
+			"link_img":   link.LinkImg,
+			"link_title": link.LinkTitle,
+		},
 	})
 
 }

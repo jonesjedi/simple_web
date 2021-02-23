@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	USER_EMAIL_RESET_PWD_URL   = "http://onb.io/login/setPassWord?code=%s"
+	USER_EMAIL_RESET_PWD_URL   = "http://onb.io/user/setPassWord?code=%s"
 	USER_RESET_PWD_CONTENT_PRE = "user_reset_pwd:%s"
 )
 
@@ -51,7 +51,7 @@ func HandleSendResetPwdEmailRequest(c *gin.Context) {
 	}
 
 	//到这里，就可以发邮件了
-	err, code := GenValidCode(user.ID, params.userEmailOrUserName)
+	err, code := GenResetPwdCode(user.ID, params.userEmailOrUserName)
 	if err != nil {
 		logger.Error("gen valid code failed ,", zap.Error(err))
 		c.Error(errcode.ErrInternal)
@@ -88,7 +88,9 @@ func HandleSendResetPwdEmailRequest(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "success",
-		"data": gin.H{},
+		"data": gin.H{
+			"email": user.Email,
+		},
 	})
 
 }
@@ -120,7 +122,7 @@ func GenResetPwdCode(userId uint64, userEmail string) (err error, emailValidCode
 	conn := redis.GetConn("onbio")
 	defer conn.Close()
 
-	key := fmt.Sprintf(USER_RESET_PWD_CONTENT_PRE, resetPwdContentStr)
+	key := fmt.Sprintf(USER_RESET_PWD_CONTENT_PRE, emailValidCode)
 	_, err = conn.Do("SET", key, string(resetPwdContentStr), "EX", 6*3600, "NX")
 	if err != nil && err != redigo.ErrNil {
 		logger.Error("err set redis ", zap.String("key", key), zap.Error(err))

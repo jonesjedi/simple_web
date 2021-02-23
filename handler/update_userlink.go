@@ -26,6 +26,9 @@ func HandleUpdateUserLinkRequest(c *gin.Context) {
 	var params UpdateUserLinkParam
 	params.UseFlag = -1
 	params.IsSpecial = -1
+	params.Title = "default"
+	params.LinkDesc = "default"
+	params.LinkImg = "default"
 	err := c.ShouldBindJSON(&params)
 	if err != nil {
 		logger.Error("params err ")
@@ -37,22 +40,22 @@ func HandleUpdateUserLinkRequest(c *gin.Context) {
 		c.Error(errcode.ErrParam)
 		return
 	}
-
+	logger.Info("params", zap.Any("params", params))
 	userID := (uint64)(c.GetInt("user_id"))
 
 	var link model.Link
-	if params.LinkDesc != "" {
-		link.LinkDesc = params.LinkDesc
-	}
+	//if params.LinkDesc != "default" {
+	link.LinkDesc = params.LinkDesc
+	//}
 	if params.LinkUrl != "" {
 		link.LinkUrl = params.LinkUrl
 	}
-	if params.LinkImg != "" {
-		link.LinkImg = params.LinkImg
-	}
-	if params.Title != "" {
-		link.LinkTitle = params.Title
-	}
+	//if params.LinkImg != "default" {
+	link.LinkImg = params.LinkImg
+	//}
+	//if params.Title != "default" {
+	link.LinkTitle = params.Title
+	//}
 	if params.Position != 0 {
 		link.Position = (uint64)(params.Position)
 	}
@@ -62,7 +65,7 @@ func HandleUpdateUserLinkRequest(c *gin.Context) {
 	//if params.UseFlag != -1 {
 	link.UseFlag = params.UseFlag
 	//}
-	logger.Error("link info", zap.Any("link", link))
+	logger.Info("link info", zap.Any("link", link))
 	linkID := (uint64)(params.ID)
 	err = model.UpdateLinkByID(linkID, userID, link)
 

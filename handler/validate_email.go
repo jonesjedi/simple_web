@@ -23,7 +23,7 @@ import (
 **/
 
 const (
-	Validate_Succ_URL = "http://onb.io/login/mailPassed"
+	Validate_Succ_URL = "http://onb.io/user/mailPassed"
 	Validate_Fail_URL = "http://onb.io/"
 )
 

@@ -75,6 +75,7 @@ Form 表单提交
 |  ----  | ----  | ----  | ----  |
 |  user_name  | string  | 是  | 用户名  |
 |  user_pwd  | string  | 是  | 密码  |
+|  is_remembered  | int  | 否  | 是否要记住  |
 
 #### 返回
 ```json
@@ -222,7 +223,16 @@ POST
 {
     "ret":0,    
     "msg":"succ",
-    "data":{}
+    "data":
+    {
+        "link_id":111,
+        "link_url":"http://www.qq.com",
+        "link_desc":"etss",
+        "link_img":"首图链接",
+        "is_valid":0,
+        "is_special":1,
+        "position":12
+    }
 }
 ```
 
