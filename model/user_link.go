@@ -68,6 +68,10 @@ func CreateLink(userID, position uint64, linkUrl, linkDesc, linkImg, linkTitle s
 		LastUpdatedTime: uint64(time.Now().Unix()),
 	}
 
+	if linkTitle == "" {
+		newLink.UseFlag = 0
+	}
+
 	db := getMysqlConn().Table(LinkTableName)
 	db = db.Create(&newLink)
 	if db.Error != nil {
