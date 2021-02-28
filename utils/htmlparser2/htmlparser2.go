@@ -17,8 +17,7 @@ func ParseURL(uri string) (title, desc, img string, err error) {
 	// user go scraper get url link preview
 	s, serr := goscraper.Scrape(uri, 5)
 	if serr != nil {
-		err = serr
-		return
+		logger.Info("parse failed", zap.Error(serr))
 	}
 	title = s.Preview.Title
 	desc = s.Preview.Description
