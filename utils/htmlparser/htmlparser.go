@@ -3,11 +3,11 @@ package htmlparser
 import (
 	"errors"
 
+	"github.com/PuerkitoBio/goquery"
+	"go.uber.org/zap"
 	"net/http"
 	"onbio/logger"
 	"strings"
-	"github.com/PuerkitoBio/goquery"
-	"go.uber.org/zap"
 )
 
 func ParseUrl(url string) (title, desc, img string, err error) {
@@ -41,13 +41,13 @@ func ParseUrl(url string) (title, desc, img string, err error) {
 
 	img, _ = doc.Find("body").Find("img").Attr("src")
 
-	find := strings.Contains(img,"http")
-	if !find{
+	find := strings.Contains(img, "http")
+	if !find {
 		img = "https:" + img
 	}
-	//img += "https:" 
+	//img += "https:"
 
-	logger.Info("parse result",zap.String("title",title),zap.String("desc",desc),zap.String("img",img))
+	logger.Info("parse result", zap.String("title", title), zap.String("desc", desc), zap.String("img", img))
 
 	return
 }

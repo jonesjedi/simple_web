@@ -6,7 +6,7 @@ import (
 	"onbio/model"
 	"onbio/utils"
 	"onbio/utils/errcode"
-	"onbio/utils/htmlparser"
+	"onbio/utils/htmlparser2"
 	"onbio/utils/uploader"
 	"strings"
 
@@ -55,7 +55,7 @@ func HandleCreateUserLinkRequest(c *gin.Context) {
 	}
 
 	//根据传入的URL拉取对应的信息
-	title, desc, img, err := htmlparser.ParseUrl(linkUrl)
+	title, desc, img, err := htmlparser2.ParseURL(linkUrl)
 
 	if err != nil {
 		logger.Error("ParseUrl failed ", zap.String("url", linkUrl), zap.Error(err))
