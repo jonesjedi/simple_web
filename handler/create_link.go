@@ -8,6 +8,7 @@ import (
 	"onbio/utils/errcode"
 	"onbio/utils/htmlparser2"
 	"onbio/utils/uploader"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -69,16 +70,34 @@ func HandleCreateUserLinkRequest(c *gin.Context) {
 	//如果下载不下来，就还用原来的链接，算盗链
 	if err != nil {
 		logger.Error("download pic failed ", zap.Error(err))
-		remoteUrl = img
+		remoteUrl = ""
 
 	} else {
 		logger.Info("download succ ", zap.String("picPath", picPath))
 
-		//再上传到ucloud
-		remoteUrl, err = uploader.UploadIMGToUcloud(picPath)
+		for {
+			//判断文件大小
+			fileOnTmp, err := os.Stat(picPath)
+			if err != nil {
+				logger.Info("err stat file ", zap.String("file path", picPath))
+				remoteUrl = ""
+				break
+			}
+			fileSize := fileOnTmp.Size()
 
-		if err != nil {
-			logger.Error("upload to ucloud failed ", zap.Error(err))
+			if fileSize < 2000 {
+				logger.Info("file is too small as a pic", zap.Int64("fileSize", fileSize))
+				remoteUrl = ""
+				break
+			}
+			//再上传到ucloud,超过5kb的才上传
+			if fileSize >= 2000 {
+				remoteUrl, err = uploader.UploadIMGToUcloud(picPath)
+
+				if err != nil {
+					logger.Error("upload to ucloud failed ", zap.Error(err))
+				}
+			}
 		}
 
 	}

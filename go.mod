@@ -3,7 +3,7 @@ module onbio
 go 1.15
 
 require (
-	github.com/EDDYCJY/fake-useragent v0.2.0 // indirect
+	github.com/EDDYCJY/fake-useragent v0.2.0
 	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
@@ -34,6 +34,6 @@ require (
 	github.com/vanng822/go-premailer v1.9.0 // indirect
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
+	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
