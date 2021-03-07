@@ -60,7 +60,7 @@ func HandleCreateUserLinkRequest(c *gin.Context) {
 	if err != nil {
 		logger.Error("ParseUrl failed ", zap.String("url", linkUrl), zap.Error(err))
 		c.Error(errcode.ErrInternal)
-		return
+		// return 	记录错误，继续执行
 	}
 	var remoteUrl string
 	//根据获取到的URL地址，下载图片，上传到ucloud ,拿到新的地址

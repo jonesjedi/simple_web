@@ -18,7 +18,6 @@ func ParseURL(uri string) (title, desc, img string, err error) {
 	s, serr := goscraper.Scrape(uri, 5)
 	if serr != nil {
 		err = serr
-		return
 	}
 	title = s.Preview.Title
 	desc = s.Preview.Description
